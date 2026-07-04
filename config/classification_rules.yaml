@@ -1,0 +1,42 @@
+# ── Classification rules (the "trainable" layer) ─────────────────────────────
+# These rules are injected verbatim into the classifier prompt. Edit them to
+# change how comments get flagged, then run:  python -m dabur_listen reclassify
+#
+# Corrections you record (CLI `label` command or the dashboard's Review tab)
+# are ALSO fed to the classifier as worked examples — see training/corrections.jsonl.
+
+sentiment_rules:
+  - "Heart emojis (❤️ 🧡 💛 💚 💙 💜 🤎 🖤 🤍 ♥️ 😍 🥰 😘) with no negative text = POSITIVE, even if the comment is emojis only."
+  - "Fire 🔥, clapping 👏, thumbs-up 👍, 💯, ✨ on a brand post = POSITIVE."
+  - "Asking where to buy, price, or availability is NOT negative — it is neutral-to-positive interest."
+  - "Sarcasm in Arabic dialects (e.g. 'ما شاء الله عليكم' used mockingly) should be read from context, not literally."
+  - "Complaints about fakes/counterfeits are NEGATIVE for trust but tag theme 'counterfeit'."
+  - "Tagging a friend (@mention only, no text) = NEUTRAL engagement."
+  - "Religious blessings (ما شاء الله, تبارك الله, Mashallah) on product results = POSITIVE."
+
+intent_rules:
+  - "Asking for the price ('bikam?', 'كم سعره', 'how much', 'bei gani', 'necha pul') = purchase_intent."
+  - "Asking where to buy / availability in their country = purchase_intent."
+  - "Asking if product works for a hair/skin type = consideration."
+  - "Reporting a bad experience or side effect = complaint."
+  - "Praising results, before/after excitement = advocacy."
+  - "Asking usage instructions ('how do I apply') = usage_question."
+  - "Off-topic, giveaway-begging, follow-for-follow, links = spam."
+
+# Theme taxonomy — the classifier must pick from this list (plus free topics).
+themes:
+  - efficacy            # does the product work (hair growth, dandruff, whitening...)
+  - fragrance           # smell/scent comments
+  - price_value         # price complaints or value praise
+  - availability        # where to buy, out of stock, not in my country
+  - packaging           # bottle, size, design
+  - ingredients         # naturals, chemicals, halal concerns
+  - side_effects        # irritation, hair fall, allergies
+  - counterfeit         # fake product concerns
+  - comparison          # compared with another brand
+  - nostalgia           # childhood memories, mother used it
+  - influencer_trust    # trust/distrust of the promoting creator
+  - customer_service    # complaints about support/response
+
+# Number of most-recent corrections included as worked examples in the prompt.
+max_corrections_in_prompt: 40

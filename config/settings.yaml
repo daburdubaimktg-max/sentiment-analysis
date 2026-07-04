@@ -1,0 +1,91 @@
+# ── Dabur International — Social Listening configuration ─────────────────────
+# Edit freely. The pipeline reads this file on every run.
+
+# Claude model used for translation + classification.
+model: claude-opus-4-8
+
+# How many comments per Claude call (translation & classification).
+batch_size: 25
+
+# ── Brand universe ────────────────────────────────────────────────────────────
+# "own" brands are Dabur International portfolio; "competitors" are tracked for
+# share-of-voice. Aliases help the classifier attribute mentions (include
+# Arabic-script and common misspellings as you discover them).
+brands:
+  own:
+    - name: Dabur Amla
+      aliases: ["dabur amla", "amla hair oil", "دابر أملا", "دابر عملا", "amla"]
+    - name: Vatika
+      aliases: ["vatika", "فاتيكا", "vatika oil", "vatika shampoo"]
+    - name: Dermoviva
+      aliases: ["dermoviva", "ديرموفيفا"]
+    - name: Dabur Herbal
+      aliases: ["dabur herbal", "dabur toothpaste", "معجون دابر"]
+    - name: Dabur Miswak
+      aliases: ["miswak", "دابر مسواك", "meswak"]
+  competitors:
+    - name: Sunsilk
+      aliases: ["sunsilk", "صانسيلك"]
+    - name: Pantene
+      aliases: ["pantene", "بانتين"]
+    - name: Garnier
+      aliases: ["garnier", "غارنييه", "جارنييه"]
+    - name: L'Oreal
+      aliases: ["loreal", "l'oreal", "لوريال"]
+    - name: Himalaya
+      aliases: ["himalaya", "هيمالايا"]
+    - name: Parachute
+      aliases: ["parachute", "باراشوت"]
+
+# ── Markets ───────────────────────────────────────────────────────────────────
+# Used by the classifier to bucket location signals (dialect, currency,
+# place names, phone-code mentions) into a market.
+markets:
+  - { code: UAE, name: United Arab Emirates, hints: ["dubai", "abu dhabi", "دبي", "الامارات", "AED", "dirham"] }
+  - { code: KSA, name: Saudi Arabia, hints: ["riyadh", "jeddah", "الرياض", "السعودية", "SAR", "ريال"] }
+  - { code: EGY, name: Egypt, hints: ["cairo", "مصر", "القاهرة", "EGP", "جنيه", "egyptian arabic dialect"] }
+  - { code: MAR, name: Morocco, hints: ["casablanca", "المغرب", "darija dialect", "MAD", "درهم"] }
+  - { code: NGA, name: Nigeria, hints: ["lagos", "abuja", "naija", "NGN", "naira", "pidgin", "hausa", "yoruba"] }
+  - { code: KEN, name: Kenya, hints: ["nairobi", "kenya", "KES", "swahili", "sheng slang", "bob (KES slang)"] }
+  - { code: TZA, name: Tanzania, hints: ["dar es salaam", "tanzania", "TZS", "swahili"] }
+  - { code: ZAF, name: South Africa, hints: ["johannesburg", "cape town", "ZAR", "rand"] }
+  - { code: UZB, name: Uzbekistan, hints: ["tashkent", "toshkent", "uzbek language", "so'm", "UZS"] }
+  - { code: KAZ, name: Kazakhstan, hints: ["almaty", "astana", "kazakh language", "tenge", "KZT"] }
+
+# ── Apify actors ──────────────────────────────────────────────────────────────
+# Mapping of (platform, mode) -> Apify actor + input template.
+# {value} is replaced with the URL (url mode) or the keyword (keyword mode).
+# Swap actor ids here if you prefer different scrapers from the Apify store.
+apify:
+  timeout_secs: 900        # max wait for an actor run
+  max_items: 500           # cap items per run (controls cost)
+  actors:
+    tiktok:
+      url:
+        actor: clockworks~tiktok-comments-scraper
+        input: { postURLs: ["{value}"], commentsPerPost: 300 }
+      keyword:
+        actor: clockworks~tiktok-scraper
+        input: { searchQueries: ["{value}"], resultsPerPage: 50, shouldDownloadVideos: false, shouldDownloadCovers: false }
+    instagram:
+      url:
+        actor: apify~instagram-comment-scraper
+        input: { directUrls: ["{value}"], resultsLimit: 300 }
+      keyword:
+        actor: apify~instagram-hashtag-scraper
+        input: { hashtags: ["{value}"], resultsLimit: 100 }
+    youtube:
+      url:
+        actor: streamers~youtube-comments-scraper
+        input: { startUrls: [{ url: "{value}" }], maxComments: 300 }
+      keyword:
+        actor: streamers~youtube-scraper
+        input: { searchKeywords: "{value}", maxResults: 50 }
+    facebook:
+      url:
+        actor: apify~facebook-comments-scraper
+        input: { startUrls: [{ url: "{value}" }], resultsLimit: 300 }
+    x:
+      keyword:
+        actor: apidojo~tweet-scraper
+        input: { searchTerms: ["{value}"], maxItems: 200, sort: Latest }

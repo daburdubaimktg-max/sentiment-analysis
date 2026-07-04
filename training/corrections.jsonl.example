@@ -1,0 +1,3 @@
+{"text": "❤️❤️❤️", "correct": {"sentiment": "positive", "intent": "advocacy"}, "note": "hearts-only comments are positive"}
+{"text": "بكم سعره في السعودية؟", "correct": {"sentiment": "neutral", "intent": "purchase_intent"}, "note": "price question = buying interest, not negativity"}
+{"text": "7abibi wallah this oil 3ajeeb", "correct": {"sentiment": "positive", "intent": "advocacy"}, "note": "arabizi praise — 3ajeeb = amazing"}

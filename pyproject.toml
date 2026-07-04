@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dabur-listen"
+version = "0.1.0"
+description = "Dabur International in-house social listening & sentiment analysis"
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic>=0.60.0",
+    "requests>=2.32.0",
+    "PyYAML>=6.0",
+    "click>=8.1",
+    "streamlit>=1.37",
+    "plotly>=5.22",
+    "pandas>=2.2",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+dabur-listen = "dabur_listen.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
