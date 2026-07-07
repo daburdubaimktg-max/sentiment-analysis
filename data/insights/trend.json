@@ -1,0 +1,22 @@
+{
+  "verdict": "GO",
+  "vsub": "Own the natural oral-care conversation — with a dual-formula guardrail",
+  "name": "Natural & Fluoride-Free Oral Care",
+  "for": "Dabur Herb'l · Iraq & MENA",
+  "snapshot": [
+    { "label": "THE TREND", "val": "Natural OTC", "sub": "clove, miswak, charcoal, 'free-from'", "tone": "navy" },
+    { "label": "EVIDENCE IN DATA", "val": "Organic", "sub": "fans cite fluoride-free unprompted as a purchase reason", "tone": "green" },
+    { "label": "THE SPLIT", "val": "2 camps", "sub": "'free-from' fans vs fluoride-loyal skeptics quitting silently", "tone": "gold" },
+    { "label": "DABUR FIT", "val": "Very High", "sub": "herbal heritage + clove cult + Miswak line", "tone": "green" },
+    { "label": "CARRIER", "val": "Dentist creators", "sub": "Miss Qurunfula converted skeptics in one reel", "tone": "purple" },
+    { "label": "MAIN RISK", "val": "Counterfeits", "sub": "fakes already blamed for cavities under the brand's name", "tone": "red" }
+  ],
+  "what": "Across MENA beauty and personal care, 'natural / free-from' claims moved from niche to default shelf language — and oral care is the next category absorbing it. In this dataset the trend shows up unprompted: Iraqi users praise the paste BECAUSE it is fluoride-free and herbal ('the key thing is it's fluoride-free — use it'), meme-ify the clove identity, and cross-shop against Sensodyne and Crest. The counter-current is equally real: ingredient-literate users quit over missing fluoride. The trend is not 'drop fluoride everywhere' — it is 'own the natural narrative while keeping a science-forward option in the same family'.",
+  "sections": [
+    { "title": "Why Dabur wins this", "body": "Nobody else in the Iraqi thread has a cult ingredient (clove), a heritage story (Miswak, herbal ranges), a beloved dentist-creator, and a 3,000 IQD price point at once. Competitors named in the data — Crest, Sensodyne — are fought on efficacy and price, not on 'natural', which is undefended ground Dabur already occupies." },
+    { "title": "The dual-formula play", "body": "Message the natural line to the free-from audience; visibly signpost fluoride SKUs for the skeptics instead of arguing. One FAQ + shelf-edge messaging converts the debate from a churn driver into a range-selling moment. Never let the comment section be the only place the ingredient strategy is discussed." },
+    { "title": "Creator engine", "body": "Dentist-credibility content is the trend's delivery vehicle. Extend Miss Qurunfula into a series (real-vs-fake, kids, braces — all asked in-thread) and replicate the format with one dentist-creator per market: Egypt, KSA, Kenya." },
+    { "title": "Risks to own", "body": "• Counterfeits — fakes are already causing cavities attributed to the brand; authenticity campaign is a precondition to scaling the trend.\n• Regulatory/professional pushback — dental associations favor fluoride; keep claims about protection herbal-specific and honest.\n• Accessory drag — the bundled brush complaints show how a side item can tax a hero product's trend equity." },
+    { "title": "90-day plan", "body": "• Weeks 1–2: authenticity guide + brush fix + fluoride FAQ (defensive base).\n• Weeks 3–6: Miss Qurunfula series; pin ordering info; seed charcoal variant.\n• Weeks 7–12: extend to 2 new markets with local dentist-creators; UGC price-comparison creative; measure share of 'natural oral care' conversation vs Sensodyne/Crest mentions." }
+  ]
+}

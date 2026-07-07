@@ -1,0 +1,64 @@
+{
+  "alert": "",
+  "timeline": [
+    { "d": "Jan 26", "t": "Cee-C (BBNaija) campaign video posted on @orshaircare_sa — celebrity-spotting comments dominate day one.", "tone": "green" },
+    { "d": "Feb", "t": "Product testimonials build: relaxer and mousse praise, 'my go-to brand'.", "tone": "green" },
+    { "d": "Mar", "t": "Repeated 'part 2 / part 3' requests — the format has pull; audience wants a series.", "tone": "gold" },
+    { "d": "Apr 02", "t": "Dataset exported — no brand replies; two where-to-buy questions open.", "tone": "red" }
+  ],
+  "variants": [
+    { "rank": "🥇", "name": "ORS Relaxer", "note": "'worked the best for me', 'de bast' — strongest product signal", "tag": "Hero SKU", "tone": "green" },
+    { "rank": "🥈", "name": "Mousse", "note": "'works everytime on my braids'", "tag": "Loved", "tone": "green" },
+    { "rank": "🥉", "name": "Cee-C effect", "note": "~20 comments are pure celebrity fandom (Naija + SA)", "tag": "Reach Driver", "tone": "gold" },
+    { "rank": "4", "name": "Scent", "note": "one 'works but the smell threw me off'", "tag": "Watch", "tone": "red" },
+    { "rank": "5", "name": "Series demand", "note": "8× 'part 2' requests — unmet content appetite", "tag": "Opportunity", "tone": "purple" }
+  ],
+  "channels": [
+    { "name": "South Africa", "status": "ok", "note": "core audience — Zulu/Xhosa/Tswana comments present" },
+    { "name": "Nigeria", "status": "ok", "note": "Cee-C fandom pulls Naija viewers into an SA channel" },
+    { "name": "Kenya", "status": "ok", "note": "Joy Kendi recognition — East Africa spillover" },
+    { "name": "Where-to-buy", "status": "warn", "note": "'where can I get it guys' — unanswered" }
+  ],
+  "channelNote": "The celebrity roster is accidentally pan-African — the comment section spans SA, Nigeria and Kenya while the handle targets SA only.",
+  "respQuality": "0 brand replies across 104 comments, including an unanswered 'where can I get it' and a direct product question about real vs artificial hair. Light lift, high return: three pinned answers would cover 80% of open questions.",
+  "risks": [
+    {
+      "sev": "MEDIUM",
+      "title": "Scent objection on a hero product",
+      "desc": "One 'works wonders but the smell really threw me off'. Isolated today, but scent complaints compound in beauty categories — worth a tracked tag.",
+      "q": "it work wonders but the smell really through me off",
+      "by": "@thando_m",
+      "sla": "Track; respond publicly",
+      "reply": "We hear you! 💛 Which product was it? Our newer batches have a refreshed scent — DM us and we'll sort you out with a sample."
+    },
+    {
+      "sev": "MEDIUM",
+      "title": "Open purchase questions going stale",
+      "desc": "'Where can I get it guys' answered by nobody. On TikTok, unanswered where-to-buy comments under a celebrity campaign are the cheapest conversion loss in marketing.",
+      "q": "where can i get it guys",
+      "by": "@lebo.style",
+      "sla": "Reply + pin within 24h",
+      "reply": "Find the full ORS range at Clicks, Dis-Chem and Takealot 🛒✨ — and tell us your city, we'll point you to the nearest stockist!"
+    },
+    {
+      "sev": "MEDIUM",
+      "title": "Product-fit question unanswered (real vs artificial hair)",
+      "desc": "A genuine consideration-stage question ('is this spray good for real / artificial hair or BOTH') left hanging — exactly the comment a brand educator should own.",
+      "q": "Help me understand. Is this spray good for real /artifical hair or for BOTH",
+      "by": "@nomvula.k",
+      "sla": "Reply within 24h",
+      "reply": "Great question! 🙌 It's formulated for natural hair AND protective styles — use it on braids, wigs and your own crown. Part 2 with a full demo is coming!"
+    }
+  ],
+  "recos": [
+    { "n": 1, "title": "Ship the 'Part 2' the audience keeps asking for", "when": "THIS WEEK", "tone": "green",
+      "desc": "Eight organic requests for a sequel is a content brief written by the algorithm. Same format, same faces, answer the real-vs-artificial-hair question inside it." },
+    { "n": 2, "title": "Pin a stockist answer under the video", "when": "TODAY", "tone": "red",
+      "desc": "One pinned comment (Clicks / Dis-Chem / Takealot) converts the open where-to-buy demand and every future viewer who wonders the same." },
+    { "n": 3, "title": "Lean into the pan-African accident", "when": "THIS MONTH", "tone": "purple",
+      "desc": "Cee-C pulled Nigeria into an SA channel; Joy Kendi pulled Kenya. The roster is doing regional expansion for free — brief the next video to name-check markets and stockists beyond SA." },
+    { "n": 4, "title": "Amplify the relaxer testimonials", "when": "NEXT CAMPAIGN", "tone": "gold",
+      "desc": "'The ORS relaxer worked the best for me' is a competitive-displacement quote. Screenshot-style UGC creative from real comments outperforms studio claims in this category." }
+  ],
+  "takeaway": "A healthy, warm campaign: celebrity reach (Cee-C) is converting into product testimonials (relaxer, mousse), the audience is literally requesting more content, and the only failures are answered-by-nobody questions. Ship part 2, pin the stockists, and let the comment section write the next creative."
+}

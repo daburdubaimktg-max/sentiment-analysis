@@ -110,6 +110,17 @@ def hub(out, demo, no_samples):
     click.echo(f"Wrote {path} — open in a browser or share as a Claude artifact.")
 
 
+@cli.command()
+@click.option("--brand", default=None, help="Only this brand id (default: all + trend)")
+def insights(brand):
+    """Have Claude write the strategist layer: risks with suggested replies,
+    action plan, timeline, variants, channels, takeaway, and the Trend Radar.
+    Results land in data/insights/ and are overlaid on the next `hub` build."""
+    from .insights import generate_all
+    written = generate_all(brand)
+    click.echo(f"Wrote insights for: {', '.join(written)}. Rebuild with: python -m dabur_listen hub")
+
+
 def _chunks(rows, size):
     for i in range(0, len(rows), size):
         yield rows[i:i + size]

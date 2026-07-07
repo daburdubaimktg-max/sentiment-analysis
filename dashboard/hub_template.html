@@ -148,6 +148,15 @@
   .empty{color:var(--muted);font-size:12.5px;padding:22px 0;text-align:center}
   .takeaway{border-radius:14px;background:var(--sky);color:var(--skyI);padding:14px 18px;font-size:13px;line-height:1.55}
   .verdict{font-size:34px;font-weight:800;letter-spacing:-.02em}
+
+  .distbar{display:flex;gap:2px;height:22px;border-radius:999px;overflow:hidden;margin:4px 0 2px}
+  .distbar div{display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:700;color:#fff;min-width:0;white-space:nowrap}
+  .spark{display:block;margin-top:6px;opacity:.65}
+  .reply{margin-top:10px;border-radius:12px;background:var(--mint);color:var(--mintI);padding:10px 13px;position:relative}
+  .reply .rt{font-size:9.5px;font-weight:750;letter-spacing:.08em;margin-bottom:4px;opacity:.8}
+  .reply .rb{font-size:12.5px;line-height:1.55}
+  .reply .copybtn{position:absolute;top:8px;right:8px;padding:3px 12px;font-size:11px;box-shadow:none}
+  tr.cmprow{cursor:pointer}
 </style>
 
 <div class="viz-root">
@@ -176,6 +185,11 @@
     <div class="kpis" id="kpis"></div>
     <div id="alertbox"></div>
     <div class="grid">
+      <div class="card wide" style="padding:14px 20px 16px">
+        <h3>Sentiment distribution <small>· click a theme to drill into its comments</small></h3>
+        <div class="distbar" id="c-dist"></div>
+        <div class="chips" id="c-themestrip" style="margin-top:12px"></div>
+      </div>
       <div class="card wide"><h3>Sentiment over time</h3><div class="legend" id="lg-line"></div><div id="c-line"></div></div>
       <div class="card"><h3>Sentiment split</h3><div id="c-donut"></div></div>
       <div class="card"><h3>Refresh timeline</h3><ul class="tl" id="c-timeline"></ul></div>
@@ -187,7 +201,11 @@
     <div class="card wide">
       <h3>Filterable comment feed</h3>
       <div class="chips" id="cfilters" style="margin-bottom:10px"></div>
-      <input class="search" id="csearch" placeholder="Search original or translation…">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <input class="search" id="csearch" placeholder="Search original or translation…">
+        <select class="pill" id="cthemesel" style="margin-bottom:8px"><option value="">All themes</option></select>
+        <select class="pill" id="cvidsel" style="margin-bottom:8px"><option value="">All posts</option></select>
+      </div>
       <div id="c-feed"></div>
       <div class="pager" id="cpager"></div>
     </div>
@@ -208,6 +226,8 @@
       <div class="card"><h3>Share of voice — brand mentions</h3><div class="legend" id="lg-sov"></div><div id="c-sov"></div></div>
       <div class="card"><h3>Mentions by market</h3><div id="c-markets"></div></div>
       <div class="card"><h3>Channels &amp; availability signals</h3><div id="c-channels"></div></div>
+      <div class="card wide"><h3>Portfolio compare <small>— every brand in this snapshot (click a row to switch)</small></h3>
+        <div id="c-compare" style="overflow-x:auto"></div></div>
     </div>
   </div>
 
@@ -268,7 +288,15 @@ const SVAR={pos:"var(--pos)",neu:"var(--neu)",neg:"var(--neg)"};
 const SCHIP={pos:"c-pos",neu:"c-neu",neg:"c-neg"};
 const SNAME={pos:"positive",neu:"neutral",neg:"negative"};
 const LF={en:"🇬🇧",sw:"🇰🇪",ar:"🇮🇶",fr:"🇫🇷",tr:"🇹🇷",ur:"🇵🇰",ru:"🇷🇺",uz:"🇺🇿",kk:"🇰🇿",zu:"🇿🇦",xh:"🇿🇦",th:"🇹🇭",ts:"🇿🇦"};
-const state={active:null,cfilter:"all",cpage:0,search:""};
+const state={active:null,cfilter:"all",cpage:0,search:"",ctheme:"",cvid:""};
+const prettyTh=t=>String(t||"").replace(/_/g," ");
+function gotoComments(themeKey){
+  state.ctheme=themeKey||""; state.cfilter="all"; state.cpage=0;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+  document.querySelector('.tab[data-t="comments"]').classList.add("active");
+  document.getElementById("sec-comments").classList.add("active");
+  renderComments(B()); scrollTo({top:0,behavior:"smooth"});}
 
 function showTip(h,x,y){tip.innerHTML=h;tip.style.display="block";
   const r=tip.getBoundingClientRect();
@@ -311,6 +339,7 @@ function buildSwitcher(){const sel=$("#brandSel");
   sel.innerHTML=DATA.order.map(id=>`<option value="${esc(id)}">${esc(DATA.brands[id].meta.name)}</option>`).join("");
   sel.value=state.active||DATA.order[0];}
 window.setBrand=function(id){state.active=id;state.cfilter="all";state.cpage=0;state.search="";
+  state.ctheme="";state.cvid="";
   $("#csearch").value=""; $("#brandSel").value=id; renderAll();};
 $("#brandSel").addEventListener("change",e=>setBrand(e.target.value));
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
@@ -386,14 +415,50 @@ function renderHeader(b){
   $("#metaline").innerHTML=`<b>${esc(b.meta.name)}</b> · ${esc(b.meta.handle||"")} · ${esc(b.meta.market||"")} ·
     ${esc(b.meta.postsLabel||"")} · ${esc(b.meta.dates||"")} <span style="color:var(--mintI);font-weight:600">${esc(b.meta.refresh||"")}</span> ·
     ${esc(b.meta.scraper||"")}`;}
+function sparkline(cs){
+  const dated=(cs||[]).filter(c=>c.d);
+  if(dated.length<4)return "";
+  const days=[...new Set(dated.map(c=>c.d))].sort().slice(-14);
+  const idx=new Map(days.map((d,i)=>[d,i]));
+  const v=days.map(()=>0);
+  for(const c of dated){const i=idx.get(c.d); if(i!=null)v[i]++;}
+  const W=120,H=24,max=Math.max(...v,1);
+  const pts=v.map((n,i)=>`${(i/(v.length-1))*W},${H-2-(n/max)*(H-4)}`).join(" ");
+  return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linejoin="round" stroke-linecap="round"/></svg>`;}
 function renderKpis(b){
-  $("#kpis").innerHTML=(b.kpis||[]).map(k=>`
+  $("#kpis").innerHTML=(b.kpis||[]).map((k,i)=>`
     <div class="kpi t-${TONE[k.tone]||"sky"}"><div class="l">${esc(k.label)}</div>
       <div class="v">${esc(k.val)}</div><div class="s">${esc(k.sub||"")}</div>
-      <div class="d">${esc(k.delta||"")}</div></div>`).join("");
+      <div class="d">${esc(k.delta||"")}</div>${i===0?sparkline(b.comments):""}</div>`).join("");
   $("#alertbox").innerHTML=b.alert?`<div class="alert">⚠️ ${b.alert}</div>`:"";}
 function renderOverview(b){
   const cs=b.comments||[];
+  // 100% sentiment distribution bar
+  const cnt={pos:0,neu:0,neg:0};
+  for(const c of cs)if(cnt[c.s]!=null)cnt[c.s]++;
+  const tot=cnt.pos+cnt.neu+cnt.neg;
+  if(tot){
+    $("#c-dist").innerHTML=["pos","neu","neg"].filter(s=>cnt[s]).map(s=>{
+      const p=Math.round(100*cnt[s]/tot);
+      return `<div style="background:${SVAR[s]};flex:0 0 ${100*cnt[s]/tot}%"
+        data-tip="${SNAME[s]}: <b>${fmt(cnt[s])}</b> (${p}%)">${p>=8?p+"%":""}</div>`;}).join("");
+    hookTips($("#c-dist"));
+  } else if(b.sent){
+    $("#c-dist").innerHTML=["pos","neu","neg"].map(s=>{
+      const p=b.sent[s]||0;
+      return p?`<div style="background:${SVAR[s]};flex:0 0 ${p}%">${p>=8?p+"%":""}</div>`:"";}).join("");
+  }
+  // clickable theme strip (raw theme keys from the comments themselves)
+  const thc=new Map();
+  for(const c of cs){const t=c.th; if(t)thc.set(t,(thc.get(t)||0)+1);}
+  const strip=[...thc.entries()].sort((a,b2)=>b2[1]-a[1]).slice(0,10);
+  $("#c-themestrip").innerHTML=strip.map(([t,n])=>
+    `<span class="chip click c-sky" data-th="${esc(t)}">${esc(prettyTh(t))} <b>${fmt(n)}</b></span>`).join("")
+    ||'<span class="empty" style="padding:0">No themes yet</span>';
+  $("#c-themestrip").querySelectorAll(".chip").forEach(ch=>
+    ch.addEventListener("click",()=>gotoComments(ch.dataset.th)));
   const dated=cs.filter(c=>c.d);
   const days=[...new Set(dated.map(c=>c.d))].sort();
   const idx=new Map(days.map((d,i)=>[d,i]));
@@ -413,7 +478,7 @@ function commentCard(c){
   return `<div class="cc"><div class="hd">
       <span class="lk">♥ ${fmt(c.lk)}</span><span class="u">@${esc(c.u)}</span><span>${flag}</span>
       <span class="minichip ${SCHIP[c.s]||"c-neu"}">${SNAME[c.s]||c.s}</span>
-      ${c.th?`<span class="minichip c-sky">${esc(c.th)}</span>`:""}
+      ${c.th?`<span class="minichip c-sky thclick" data-th="${esc(c.th)}" style="cursor:pointer" title="Filter by this theme">${esc(prettyTh(c.th))}</span>`:""}
       ${c.new?'<span class="minichip c-lav">NEW</span>':""}
       ${c.issue?'<span class="minichip c-neg">ISSUE</span>':""}
       ${c.vid?`<span style="margin-left:auto">${esc(c.vid)}</span>`:""}</div>
@@ -432,9 +497,23 @@ function renderComments(b){
       data-f="${k}">${l} <b>${n}</b></span>`).join("");
   $("#cfilters").querySelectorAll(".chip").forEach(ch=>ch.addEventListener("click",()=>{
     state.cfilter=ch.dataset.f; state.cpage=0; renderComments(B());}));
+  // theme + post selects (rebuild options, keep selection)
+  const thsel=$("#cthemesel"), vsel=$("#cvidsel");
+  const ths=[...new Set(cs.map(c=>c.th).filter(Boolean))].sort();
+  thsel.innerHTML='<option value="">All themes</option>'+
+    ths.map(t=>`<option value="${esc(t)}">${esc(prettyTh(t))}</option>`).join("");
+  thsel.value=ths.includes(state.ctheme)?state.ctheme:"";
+  if(thsel.value!==state.ctheme)state.ctheme=thsel.value;
+  const vids=[...new Set(cs.map(c=>c.vid).filter(Boolean))].sort();
+  vsel.innerHTML='<option value="">All posts</option>'+
+    vids.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+  vsel.value=vids.includes(state.cvid)?state.cvid:"";
+  if(vsel.value!==state.cvid)state.cvid=vsel.value;
   const q=state.search.toLowerCase();
   let list=cs.filter(c=>
     (state.cfilter==="all"||(state.cfilter==="new"?c.new:state.cfilter==="issue"?c.issue:c.s===state.cfilter))&&
+    (!state.ctheme||c.th===state.ctheme)&&
+    (!state.cvid||c.vid===state.cvid)&&
     (!q||(c.orig||"").toLowerCase().includes(q)||(c.en||"").toLowerCase().includes(q)));
   const PER=50, pages=Math.max(1,Math.ceil(list.length/PER));
   state.cpage=Math.min(state.cpage,pages-1);
@@ -447,7 +526,9 @@ function renderComments(b){
     `<span>${fmt(list.length)} comments</span>`;
   const pv=$("#pprev"),nx=$("#pnext");
   if(pv)pv.addEventListener("click",()=>{state.cpage--;renderComments(B());});
-  if(nx)nx.addEventListener("click",()=>{state.cpage++;renderComments(B());});}
+  if(nx)nx.addEventListener("click",()=>{state.cpage++;renderComments(B());});
+  $("#c-feed").querySelectorAll(".thclick").forEach(ch=>ch.addEventListener("click",()=>{
+    state.ctheme=ch.dataset.th; state.cpage=0; renderComments(B());}));}
 function renderInsights(b){
   const kind2c={pos:"var(--pos)",risk:"var(--neg)",gold:"var(--s8)",purple:"var(--s5)",navy:"var(--s1)"};
   pillBars("#c-themes",(b.themes||[]).map(t=>({label:t.name,
@@ -489,7 +570,27 @@ function renderBrands(b){
       <span class="minichip ${c.status==="ok"?"c-pos":c.status==="warn"?"c-neg":"c-sky"}">${esc(c.status)}</span>
       <span style="color:var(--muted);font-size:12px">${esc(c.note)}</span></div>`).join("")
     +(b.channelNote?`<p style="font-size:12px;color:var(--muted);margin:10px 0 0">${esc(b.channelNote)}</p>`:""))
-    ||'<div class="empty">No channel signals</div>';}
+    ||'<div class="empty">No channel signals</div>';
+  // portfolio compare across every brand in the snapshot
+  const rows=DATA.order.map(id=>{
+    const br=DATA.brands[id]; if(!br)return "";
+    const cs2=br.comments||[]; const n=cs2.length;
+    const s=br.sent||{}; const net=(s.pos||0)-(s.neg||0);
+    const buy=cs2.filter(c=>c.th==="price_value"||c.th==="availability").length;
+    const health=(br.kpis||[]).find(k=>/HEALTH/i.test(k.label));
+    return `<tr class="cmprow ${id===state.active?"":""}" data-b="${esc(id)}"
+        style="${id===state.active?"font-weight:650":""}">
+      <td style="color:var(--ink)">${esc(br.meta.name)}${id===state.active?" ◂":""}</td>
+      <td>${fmt(n||"—")}</td>
+      <td><span class="minichip c-pos">${s.pos||0}%</span></td>
+      <td><span class="minichip c-neg">${s.neg||0}%</span></td>
+      <td style="font-weight:650;color:${net>=0?"var(--mintI)":"var(--roseI)"}">${net>=0?"+":""}${net}</td>
+      <td>${health?esc(health.val):"—"}</td>
+      <td style="color:var(--muted)">${esc(br.meta.market||"")}</td></tr>`;}).join("");
+  $("#c-compare").innerHTML=`<table class="tb">
+    <tr><th>Brand</th><th>Comments</th><th>Positive</th><th>Negative</th><th>Net</th><th>Health</th><th>Market</th></tr>${rows}</table>`;
+  $("#c-compare").querySelectorAll(".cmprow").forEach(tr=>
+    tr.addEventListener("click",()=>setBrand(tr.dataset.b)));}
 function renderHealth(b){
   $("#c-health").innerHTML=(b.health||[]).map(h=>`
     <div class="kpi t-${TONE[h.tone]||"sky"}"><div class="l">${esc(h.label)}</div>
@@ -516,8 +617,18 @@ function renderHealth(b){
     <div class="rk"><span class="sev ${esc(String(r.sev).split(" ")[0])}">${esc(r.sev)}</span>
       <div class="t">${esc(r.title)}</div><div class="d">${esc(r.desc)}</div>
       <blockquote>“${esc(r.q)}”</blockquote><div class="by">${esc(r.by)}</div>
-      <div class="sla">SLA · ${esc(r.sla)}</div></div>`).join("")
+      <div class="sla">SLA · ${esc(r.sla)}</div>
+      ${r.reply?`<div class="reply"><div class="rt">SUGGESTED REPLY</div>
+        <div class="rb">${esc(r.reply)}</div>
+        <button class="pillbtn copybtn" data-c="${esc(r.reply)}">Copy</button></div>`:""}</div>`).join("")
     ||'<div class="empty">No risks flagged</div>';
+  $("#c-risks").querySelectorAll(".copybtn").forEach(btn=>btn.addEventListener("click",()=>{
+    const t=btn.dataset.c;
+    const done=()=>{btn.textContent="Copied ✓";setTimeout(()=>btn.textContent="Copy",1500);};
+    if(navigator.clipboard&&navigator.clipboard.writeText)
+      navigator.clipboard.writeText(t).then(done,done);
+    else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);
+      ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();done();}}));
   $("#c-recos").innerHTML=(b.recos||[]).map(r=>`
     <div class="rk"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <span class="minichip ${r.tone==="red"?"c-neg":r.tone==="green"?"c-pos":r.tone==="purple"?"c-lav":"c-sky"}">#${r.n} · ${esc(r.when)}</span>
@@ -556,6 +667,8 @@ window.renderAll=function(){const b=B(); if(!b)return;
   renderInsights(b);renderBrands(b);renderHealth(b);renderPosts(b);renderTrend();};
 
 $("#csearch").addEventListener("input",e=>{state.search=e.target.value;state.cpage=0;renderComments(B());});
+$("#cthemesel").addEventListener("change",e=>{state.ctheme=e.target.value;state.cpage=0;renderComments(B());});
+$("#cvidsel").addEventListener("change",e=>{state.cvid=e.target.value;state.cpage=0;renderComments(B());});
 addEventListener("resize",()=>{const b=B(); if(b)renderOverview(b);});
 
 loadSaved();
