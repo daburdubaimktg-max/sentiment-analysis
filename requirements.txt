@@ -6,3 +6,4 @@ streamlit>=1.37
 plotly>=5.22
 pandas>=2.2
 python-dotenv>=1.0
+openpyxl>=3.1
