@@ -1,0 +1,679 @@
+<title>Dabur Listening Hub</title>
+<style>
+  .viz-root {
+    --page:#ffffff; --card:#ffffff; --brd:#edf0f5;
+    --shadow:0 1px 2px rgba(28,36,52,.04),0 10px 30px rgba(28,36,52,.05);
+    --ink:#1c2434; --ink2:#55617a; --muted:#949db0;
+    --grid:#f0f2f7; --track:#f3f5f9; --baseline:#dfe3ec;
+    --mint:#e6f7ef; --rose:#fdeaea; --lav:#edeafb; --peach:#fff1e3; --sky:#e8f1fd;
+    --mintI:#0e7a52; --roseI:#b23a3a; --lavI:#5b4bc4; --peachI:#b06018; --skyI:#1d5fb8;
+    --pos:#1baf7a; --neu:#a3abbd; --neg:#e35d5d;
+    --s1:#5b93e0; --s5:#8f83dd; --s8:#f0925f;
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    color:var(--ink); background:var(--page);
+    padding:22px clamp(14px,3vw,44px) 60px; min-height:100vh; box-sizing:border-box;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-color-scheme: dark){ .viz-root{
+    --page:#101319; --card:#171b23; --brd:#242a36;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+    --ink:#f2f4f8; --ink2:#b8c0d0; --muted:#7e8798;
+    --grid:#232935; --track:#1f2530; --baseline:#333b4a;
+    --mint:#123527; --rose:#3a2022; --lav:#251f3f; --peach:#38281a; --sky:#16283e;
+    --mintI:#4fd6a4; --roseI:#f09a9a; --lavI:#b0a6f2; --peachI:#f0b984; --skyI:#85b6f2;
+    --pos:#2ec48c; --neu:#6f7889; --neg:#e97a7a; }}
+  :root[data-theme="dark"] .viz-root{
+    --page:#101319; --card:#171b23; --brd:#242a36;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+    --ink:#f2f4f8; --ink2:#b8c0d0; --muted:#7e8798;
+    --grid:#232935; --track:#1f2530; --baseline:#333b4a;
+    --mint:#123527; --rose:#3a2022; --lav:#251f3f; --peach:#38281a; --sky:#16283e;
+    --mintI:#4fd6a4; --roseI:#f09a9a; --lavI:#b0a6f2; --peachI:#f0b984; --skyI:#85b6f2;
+    --pos:#2ec48c; --neu:#6f7889; --neg:#e97a7a; }
+  :root[data-theme="light"] .viz-root{
+    --page:#ffffff; --card:#ffffff; --brd:#edf0f5;
+    --shadow:0 1px 2px rgba(28,36,52,.04),0 10px 30px rgba(28,36,52,.05);
+    --ink:#1c2434; --ink2:#55617a; --muted:#949db0;
+    --grid:#f0f2f7; --track:#f3f5f9; --baseline:#dfe3ec;
+    --mint:#e6f7ef; --rose:#fdeaea; --lav:#edeafb; --peach:#fff1e3; --sky:#e8f1fd;
+    --mintI:#0e7a52; --roseI:#b23a3a; --lavI:#5b4bc4; --peachI:#b06018; --skyI:#1d5fb8;
+    --pos:#1baf7a; --neu:#a3abbd; --neg:#e35d5d; }
+  .viz-root *{box-sizing:border-box}
+  .viz-root button{font-family:inherit}
+
+  .top{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px}
+  .top h1{font-size:21px;font-weight:700;letter-spacing:-.02em;margin:0}
+  .badge{font-size:11px;font-weight:650;padding:4px 12px;border-radius:999px;background:var(--lav);color:var(--lavI);letter-spacing:.04em}
+  .top .spacer{flex:1}
+  .pillbtn,select.pill{appearance:none;background:var(--card);color:var(--ink2);border:1px solid var(--brd);
+    border-radius:999px;padding:8px 16px;font-size:12.5px;box-shadow:var(--shadow);cursor:pointer}
+  .pillbtn.primary{background:var(--sky);color:var(--skyI);border-color:transparent;font-weight:650}
+  .pillbtn:disabled{opacity:.4;cursor:default}
+  .sub{color:var(--muted);font-size:12.5px;margin:2px 0 16px}
+  .sub b{color:var(--ink2);font-weight:600}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .tab{border:1px solid var(--brd);background:var(--card);color:var(--ink2);border-radius:999px;
+       padding:8px 18px;font-size:12.5px;font-weight:600;cursor:pointer}
+  .tab.active{background:var(--ink);color:var(--page);border-color:var(--ink)}
+  .section{display:none} .section.active{display:block}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--brd);border-radius:18px;padding:18px 20px;
+        min-width:0;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 13px;font-size:11px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .card h3 small{text-transform:none;letter-spacing:0;font-weight:500}
+  .wide{grid-column:1/-1}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+  .kpi{border-radius:18px;padding:14px 16px}
+  .kpi .l{font-size:10.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;opacity:.75;margin-bottom:5px}
+  .kpi .v{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.05}
+  .kpi .s{font-size:11.5px;opacity:.8;margin-top:3px}
+  .kpi .d{font-size:11px;font-weight:600;margin-top:5px}
+  .t-mint{background:var(--mint);color:var(--mintI)} .t-rose{background:var(--rose);color:var(--roseI)}
+  .t-lav{background:var(--lav);color:var(--lavI)} .t-peach{background:var(--peach);color:var(--peachI)}
+  .t-sky{background:var(--sky);color:var(--skyI)}
+
+  .alert{border-radius:14px;background:var(--rose);color:var(--roseI);padding:12px 16px;
+         font-size:13px;margin-bottom:16px;line-height:1.45}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11.5px;color:var(--ink2);margin-bottom:10px}
+  .legend i{width:9px;height:9px;border-radius:999px;display:inline-block;margin-right:5px}
+
+  .hrow{display:grid;grid-template-columns:140px 1fr 44px;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
+  .hrow .rl{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
+  .hrow .rv{color:var(--muted);font-variant-numeric:tabular-nums;font-weight:600}
+  .trackbar{display:flex;gap:2px;height:12px;background:var(--track);border-radius:999px;overflow:hidden}
+  .seg{min-width:3px} .seg:hover{filter:brightness(1.12)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:999px;
+        font-size:12px;font-weight:600;border:1px solid transparent}
+  .chip.click{cursor:pointer} .chip.on{border-color:currentColor}
+  .chip b{font-variant-numeric:tabular-nums}
+  .c-pos{background:var(--mint);color:var(--mintI)} .c-neu{background:var(--track);color:var(--ink2)}
+  .c-neg{background:var(--rose);color:var(--roseI)} .c-sky{background:var(--sky);color:var(--skyI)}
+  .c-peach{background:var(--peach);color:var(--peachI)} .c-lav{background:var(--lav);color:var(--lavI)}
+
+  .cc{border:1px solid var(--brd);border-radius:14px;padding:12px 16px;margin:8px 0;background:var(--card)}
+  .cc .hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .cc .hd .u{font-weight:650;color:var(--ink2)}
+  .cc .lk{color:var(--roseI);font-weight:650}
+  .cc .orig{font-size:14px;line-height:1.5;color:var(--ink)}
+  .cc .orig[dir="rtl"]{text-align:right}
+  .cc .en{font-size:12.5px;color:var(--ink2);font-style:italic;margin-top:5px;border-left:3px solid var(--grid);padding-left:10px}
+  .minichip{font-size:10.5px;font-weight:650;padding:2px 9px;border-radius:999px}
+
+  input.search{background:var(--card);color:var(--ink);border:1px solid var(--brd);border-radius:999px;
+        padding:8px 16px;font-size:12.5px;box-shadow:var(--shadow);width:250px;margin-bottom:8px}
+  .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px;font-size:12.5px;color:var(--muted)}
+
+  .rk{border:1px solid var(--brd);border-radius:14px;padding:14px 16px;margin:10px 0}
+  .rk .t{font-weight:650;font-size:13.5px;margin:6px 0 4px}
+  .rk .d{font-size:12.5px;color:var(--ink2);line-height:1.5}
+  .rk blockquote{margin:8px 0 4px;padding:9px 13px;background:var(--track);border-radius:10px;
+      font-size:12.5px;font-style:italic;color:var(--ink2)}
+  .rk .by{font-size:11.5px;color:var(--muted)}
+  .rk .sla{font-size:11.5px;font-weight:650;color:var(--roseI);margin-top:5px}
+  .sev{font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 10px;border-radius:999px}
+  .sev.CRITICAL{background:var(--rose);color:var(--roseI)} .sev.HIGH{background:var(--peach);color:var(--peachI)}
+  .sev.MEDIUM{background:var(--sky);color:var(--skyI)}
+
+  table.tb{width:100%;border-collapse:collapse;font-size:12.5px}
+  .tb th{text-align:left;color:var(--muted);font-weight:600;font-size:10.5px;letter-spacing:.07em;
+       text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--grid)}
+  .tb td{padding:8px 10px;border-bottom:1px solid var(--grid);vertical-align:top;color:var(--ink2)}
+  .tb tr:hover td{background:var(--track)}
+
+  .tl{list-style:none;margin:0;padding:0}
+  .tl li{display:flex;gap:12px;padding:7px 0;font-size:12.5px;border-bottom:1px solid var(--grid)}
+  .tl li:last-child{border-bottom:0}
+  .tl .d{min-width:64px;color:var(--muted);font-weight:600}
+
+  .stat2{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12.5px}
+  .stat2 .k{color:var(--muted)} .stat2 .v{color:var(--ink);font-weight:600;text-align:right}
+
+  svg text{fill:var(--muted);font-size:10.5px;font-family:inherit}
+  #tip{position:fixed;pointer-events:none;z-index:60;background:var(--card);border:1px solid var(--brd);
+       border-radius:12px;padding:8px 12px;font-size:12px;color:var(--ink);
+       box-shadow:0 8px 26px rgba(28,36,52,.14);display:none;max-width:320px}
+
+  .modal{position:fixed;inset:0;background:rgba(15,20,30,.45);display:none;align-items:center;justify-content:center;z-index:70}
+  .modal.open{display:flex}
+  .mbox{background:var(--card);border-radius:18px;padding:22px;width:min(560px,92vw);box-shadow:var(--shadow)}
+  .mbox h3{margin:0 0 10px;font-size:15px}
+  .mbox textarea{width:100%;height:180px;border:1px solid var(--brd);border-radius:12px;padding:10px;
+       font-size:12px;font-family:ui-monospace,monospace;background:var(--page);color:var(--ink)}
+  .mbox .row{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+  .empty{color:var(--muted);font-size:12.5px;padding:22px 0;text-align:center}
+  .takeaway{border-radius:14px;background:var(--sky);color:var(--skyI);padding:14px 18px;font-size:13px;line-height:1.55}
+  .verdict{font-size:34px;font-weight:800;letter-spacing:-.02em}
+
+  .distbar{display:flex;gap:2px;height:22px;border-radius:999px;overflow:hidden;margin:4px 0 2px}
+  .distbar div{display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:700;color:#fff;min-width:0;white-space:nowrap}
+  .spark{display:block;margin-top:6px;opacity:.65}
+  .reply{margin-top:10px;border-radius:12px;background:var(--mint);color:var(--mintI);padding:10px 13px;position:relative}
+  .reply .rt{font-size:9.5px;font-weight:750;letter-spacing:.08em;margin-bottom:4px;opacity:.8}
+  .reply .rb{font-size:12.5px;line-height:1.55}
+  .reply .copybtn{position:absolute;top:8px;right:8px;padding:3px 12px;font-size:11px;box-shadow:none}
+  tr.cmprow{cursor:pointer}
+</style>
+
+<div class="viz-root">
+  <div class="top">
+    <h1>Dabur · Listening Hub</h1>
+    <span class="badge" id="snapbadge"></span>
+    <span class="spacer"></span>
+    <select class="pill" id="brandSel" aria-label="Brand"></select>
+    <button class="pillbtn primary" onclick="openImport()">+ Add brand</button>
+    <button class="pillbtn" onclick="exportAll()">Export</button>
+    <button class="pillbtn" onclick="resetHub()" title="Clear imported brands">Reset</button>
+  </div>
+  <div class="sub" id="metaline"></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-t="overview">Overview</button>
+    <button class="tab" data-t="comments">Comments</button>
+    <button class="tab" data-t="insights">Themes &amp; Intent</button>
+    <button class="tab" data-t="brands">Brands &amp; Markets</button>
+    <button class="tab" data-t="health">Risks &amp; Actions</button>
+    <button class="tab" data-t="posts">Posts</button>
+    <button class="tab" data-t="trend">Trend Radar</button>
+  </div>
+
+  <div class="section active" id="sec-overview">
+    <div class="kpis" id="kpis"></div>
+    <div id="alertbox"></div>
+    <div class="grid">
+      <div class="card wide" style="padding:14px 20px 16px">
+        <h3>Sentiment distribution <small>· click a theme to drill into its comments</small></h3>
+        <div class="distbar" id="c-dist"></div>
+        <div class="chips" id="c-themestrip" style="margin-top:12px"></div>
+      </div>
+      <div class="card wide"><h3>Sentiment over time</h3><div class="legend" id="lg-line"></div><div id="c-line"></div></div>
+      <div class="card"><h3>Sentiment split</h3><div id="c-donut"></div></div>
+      <div class="card"><h3>Refresh timeline</h3><ul class="tl" id="c-timeline"></ul></div>
+      <div class="card"><h3>Top comments by engagement</h3><div id="c-top"></div></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-comments">
+    <div class="card wide">
+      <h3>Filterable comment feed</h3>
+      <div class="chips" id="cfilters" style="margin-bottom:10px"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <input class="search" id="csearch" placeholder="Search original or translation…">
+        <select class="pill" id="cthemesel" style="margin-bottom:8px"><option value="">All themes</option></select>
+        <select class="pill" id="cvidsel" style="margin-bottom:8px"><option value="">All posts</option></select>
+      </div>
+      <div id="c-feed"></div>
+      <div class="pager" id="cpager"></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-insights">
+    <div class="grid">
+      <div class="card"><h3>Themes by mention count <small>(colored by sentiment lean)</small></h3><div id="c-themes"></div></div>
+      <div class="card"><h3>Audience intent</h3><div id="c-intent"></div></div>
+      <div class="card"><h3>Top topics</h3><div id="c-variants"></div></div>
+      <div class="card"><h3>Detected languages</h3><div id="c-langs"></div></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-brands">
+    <div class="grid">
+      <div class="card wide"><h3>Tracked inputs <small>— hashtags, keywords &amp; post URLs</small></h3><div class="chips" id="c-inputs"></div></div>
+      <div class="card"><h3>Share of voice — brand mentions</h3><div class="legend" id="lg-sov"></div><div id="c-sov"></div></div>
+      <div class="card"><h3>Mentions by market</h3><div id="c-markets"></div></div>
+      <div class="card"><h3>Channels &amp; availability signals</h3><div id="c-channels"></div></div>
+      <div class="card wide"><h3>Portfolio compare <small>— every brand in this snapshot (click a row to switch)</small></h3>
+        <div id="c-compare" style="overflow-x:auto"></div></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-health">
+    <div class="kpis" id="c-health"></div>
+    <div class="grid">
+      <div class="card"><h3>Movement since last refresh</h3><div id="c-deltas"></div></div>
+      <div class="card"><h3>Brand advocates</h3><div id="c-adv"></div></div>
+      <div class="card wide"><h3>Critical comments &amp; response queue</h3>
+        <div id="c-critical" style="overflow-x:auto"></div>
+        <p id="c-respq" style="font-size:12.5px;color:var(--ink2);margin:12px 0 0"></p></div>
+      <div class="card wide"><h3>Brand risk register — by severity</h3><div id="c-risks"></div></div>
+      <div class="card wide"><h3>Prioritised action plan</h3><div id="c-recos"></div>
+        <div class="takeaway" id="c-takeaway" style="margin-top:12px"></div></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-posts">
+    <div class="grid" id="c-posts"></div>
+  </div>
+
+  <div class="section" id="sec-trend">
+    <div id="c-trend"></div>
+  </div>
+</div>
+
+<div id="tip"></div>
+<div class="modal" id="importModal">
+  <div class="mbox">
+    <h3>Add / import brand</h3>
+    <p style="font-size:12.5px;color:var(--ink2);margin:0 0 10px">
+      Paste a brand JSON (or a full <code>{"order":[...],"brands":{...}}</code> export), or load a file.
+      Imported brands persist in this browser.</p>
+    <textarea id="importText" placeholder='{"id":"my_brand","meta":{"name":"…"},…}'></textarea>
+    <div class="row">
+      <input type="file" id="importFile" accept=".json" style="font-size:12px">
+      <span style="flex:1"></span>
+      <button class="pillbtn" onclick="closeImport()">Cancel</button>
+      <button class="pillbtn primary" onclick="doImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.DATA = /*__DATA__*/{"order":[],"brands":{}};
+window.TREND = /*__TREND__*/null;
+window.META = /*__META__*/{};
+
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Number(n||0).toLocaleString();
+const tip=$("#tip");
+const LS_KEY="dabur_listening_hub_v2";
+const TONE={navy:"sky",green:"mint",purple:"lav",red:"rose",gold:"peach",sky:"sky",mint:"mint",lav:"lav",rose:"rose",peach:"peach"};
+const SVAR={pos:"var(--pos)",neu:"var(--neu)",neg:"var(--neg)"};
+const SCHIP={pos:"c-pos",neu:"c-neu",neg:"c-neg"};
+const SNAME={pos:"positive",neu:"neutral",neg:"negative"};
+const LF={en:"🇬🇧",sw:"🇰🇪",ar:"🇮🇶",fr:"🇫🇷",tr:"🇹🇷",ur:"🇵🇰",ru:"🇷🇺",uz:"🇺🇿",kk:"🇰🇿",zu:"🇿🇦",xh:"🇿🇦",th:"🇹🇭",ts:"🇿🇦"};
+const state={active:null,cfilter:"all",cpage:0,search:"",ctheme:"",cvid:""};
+const prettyTh=t=>String(t||"").replace(/_/g," ");
+function gotoComments(themeKey){
+  state.ctheme=themeKey||""; state.cfilter="all"; state.cpage=0;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+  document.querySelector('.tab[data-t="comments"]').classList.add("active");
+  document.getElementById("sec-comments").classList.add("active");
+  renderComments(B()); scrollTo({top:0,behavior:"smooth"});}
+
+function showTip(h,x,y){tip.innerHTML=h;tip.style.display="block";
+  const r=tip.getBoundingClientRect();
+  tip.style.left=Math.min(x+12,innerWidth-r.width-8)+"px";
+  tip.style.top=Math.min(y+12,innerHeight-r.height-8)+"px";}
+function hideTip(){tip.style.display="none";}
+function hookTips(el){el.querySelectorAll("[data-tip]").forEach(n=>{
+  n.addEventListener("mousemove",e=>showTip(n.dataset.tip,e.clientX,e.clientY));
+  n.addEventListener("mouseleave",hideTip);});}
+const B=()=>DATA.brands[state.active];
+
+/* persistence / import / export */
+function loadSaved(){try{const s=JSON.parse(localStorage.getItem(LS_KEY));
+  if(s&&s.brands){Object.assign(DATA.brands,s.brands);
+    (s.order||[]).forEach(id=>{if(!DATA.order.includes(id))DATA.order.push(id);});}}catch(e){}}
+function persist(){try{localStorage.setItem(LS_KEY,JSON.stringify(DATA));}catch(e){}}
+window.openImport=()=>$("#importModal").classList.add("open");
+window.closeImport=()=>$("#importModal").classList.remove("open");
+window.doImport=function(){
+  const t=$("#importText").value.trim(); if(!t)return;
+  try{const obj=JSON.parse(t); let first;
+    if(obj.brands){Object.assign(DATA.brands,obj.brands);
+      (obj.order||Object.keys(obj.brands)).forEach(id=>{if(!DATA.order.includes(id))DATA.order.push(id);});
+      first=(obj.order||Object.keys(obj.brands))[0];}
+    else{if(!obj.id){alert('Brand JSON needs an "id" field.');return;}
+      DATA.brands[obj.id]=obj; if(!DATA.order.includes(obj.id))DATA.order.push(obj.id); first=obj.id;}
+    persist(); buildSwitcher(); setBrand(first); closeImport();
+  }catch(e){alert("Invalid JSON: "+e.message);}};
+window.exportAll=function(){
+  const blob=new Blob([JSON.stringify(DATA,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="listening_hub_brands.json"; a.click();};
+window.resetHub=function(){if(confirm("Clear imported brands and reload?")){
+  localStorage.removeItem(LS_KEY); location.reload();}};
+$("#importFile").addEventListener("change",ev=>{const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader(); r.onload=()=>{$("#importText").value=r.result;}; r.readAsText(f);});
+
+/* header / switcher / tabs */
+function buildSwitcher(){const sel=$("#brandSel");
+  sel.innerHTML=DATA.order.map(id=>`<option value="${esc(id)}">${esc(DATA.brands[id].meta.name)}</option>`).join("");
+  sel.value=state.active||DATA.order[0];}
+window.setBrand=function(id){state.active=id;state.cfilter="all";state.cpage=0;state.search="";
+  state.ctheme="";state.cvid="";
+  $("#csearch").value=""; $("#brandSel").value=id; renderAll();};
+$("#brandSel").addEventListener("change",e=>setBrand(e.target.value));
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active"); $("#sec-"+t.dataset.t).classList.add("active");
+  scrollTo({top:0,behavior:"smooth"});}));
+
+/* chart primitives */
+function pillBars(sel,rows,tipFor){
+  const el=$(sel); if(!el)return;
+  if(!rows||!rows.length){el.innerHTML='<div class="empty">No data</div>';return;}
+  const max=Math.max(...rows.map(r=>r.segs.reduce((a,s)=>a+s.val,0)));
+  el.innerHTML=rows.map(row=>{
+    const total=row.segs.reduce((a,s)=>a+s.val,0);
+    const segs=row.segs.filter(s=>s.val>0).map(s=>
+      `<div class="seg" style="background:${s.color};flex:0 0 ${100*s.val/max}%"
+        data-tip="${esc((tipFor||((r,g)=>r.label+" · "+g.key+": <b>"+fmt(g.val)+"</b>"))(row,s))}"></div>`).join("");
+    return `<div class="hrow"><div class="rl" title="${esc(row.label)}">${esc(row.label)}</div>
+      <div class="trackbar">${segs}</div><div class="rv">${fmt(total)}</div></div>`;}).join("");
+  hookTips(el);}
+function donut(sel,items){
+  const el=$(sel); const total=items.reduce((a,i)=>a+i.value,0);
+  if(!total){el.innerHTML='<div class="empty">No data</div>';return;}
+  const R=72,C=100,SW=30,circ=2*Math.PI*R; let off=0,segs="";
+  for(const it of items){ if(!it.value)continue;
+    const f=it.value/total, len=Math.max(0,f*circ-3);
+    segs+=`<circle r="${R}" cx="${C}" cy="${C}" fill="none" stroke="${it.color}" stroke-width="${SW}"
+      stroke-linecap="round" stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-off*circ}"
+      transform="rotate(-90 ${C} ${C})" data-tip="${esc(it.label)}: <b>${fmt(it.value)}</b> (${Math.round(100*f)}%)"></circle>`;
+    off+=f;}
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    <svg width="160" height="160" viewBox="0 0 200 200">${segs}
+    <text x="${C}" y="${C-2}" text-anchor="middle" style="font-size:25px;font-weight:700;fill:var(--ink)">${fmt(total)}</text>
+    <text x="${C}" y="${C+17}" text-anchor="middle">comments</text></svg>
+    <div class="legend" style="flex-direction:column;align-items:flex-start;gap:8px">
+      ${items.map(i=>`<span><i style="background:${i.color}"></i>${esc(i.label)} <b style="color:var(--ink)">${fmt(i.value)}</b></span>`).join("")}
+    </div></div>`;
+  hookTips(el);}
+function lineChart(sel,days,series){
+  const el=$(sel);
+  if(!days.length){el.innerHTML='<div class="empty">No dated comments for this brand — imported snapshots may not carry per-comment dates.</div>';return;}
+  const W=Math.max(el.clientWidth||700,340),H=230,m={l:34,r:10,t:8,b:22};
+  const iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const maxY=Math.max(1,...series.flatMap(s=>s.values));
+  const x=i=>m.l+(days.length===1?iw/2:i*iw/(days.length-1));
+  const y=v=>m.t+ih-v/maxY*ih;
+  let g="";
+  for(let t=0;t<=4;t++){const v=maxY*t/4,yy=y(v);
+    g+=`<line x1="${m.l}" y1="${yy}" x2="${W-m.r}" y2="${yy}" stroke="var(--grid)"/>
+        <text x="${m.l-6}" y="${yy+3}" text-anchor="end">${Math.round(v)}</text>`;}
+  const step=Math.max(1,Math.ceil(days.length/6));
+  for(let i=0;i<days.length;i+=step)
+    g+=`<text x="${x(i)}" y="${H-6}" text-anchor="middle">${days[i].slice(5)}</text>`;
+  for(const s of series){
+    g+=`<polyline points="${s.values.map((v,i)=>x(i)+","+y(v)).join(" ")}" fill="none"
+        stroke="${s.color}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round"/>`;}
+  g+=`<line id="xh" x1="0" y1="${m.t}" x2="0" y2="${m.t+ih}" stroke="var(--baseline)" visibility="hidden"/>`;
+  el.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${H}" style="display:block">${g}
+    <rect id="ov" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/></svg>`;
+  const svg=el.querySelector("svg"),ov=el.querySelector("#ov"),xh=el.querySelector("#xh");
+  ov.addEventListener("mousemove",e=>{const r=svg.getBoundingClientRect();
+    const px=(e.clientX-r.left)/r.width*W;
+    const i=Math.max(0,Math.min(days.length-1,Math.round((px-m.l)/iw*(days.length-1))));
+    xh.setAttribute("x1",x(i));xh.setAttribute("x2",x(i));xh.setAttribute("visibility","visible");
+    showTip(`<b>${days[i]}</b><br>`+series.map(s=>
+      `<span style="color:${s.color}">●</span> ${s.name}: <b>${s.values[i]}</b>`).join("<br>"),e.clientX,e.clientY);});
+  ov.addEventListener("mouseleave",()=>{xh.setAttribute("visibility","hidden");hideTip();});}
+
+/* renderers */
+function renderHeader(b){
+  $("#snapbadge").textContent=(META.sample?"sample data · ":"")+"snapshot "+(META.generated||"");
+  $("#metaline").innerHTML=`<b>${esc(b.meta.name)}</b> · ${esc(b.meta.handle||"")} · ${esc(b.meta.market||"")} ·
+    ${esc(b.meta.postsLabel||"")} · ${esc(b.meta.dates||"")} <span style="color:var(--mintI);font-weight:600">${esc(b.meta.refresh||"")}</span> ·
+    ${esc(b.meta.scraper||"")}`;}
+function sparkline(cs){
+  const dated=(cs||[]).filter(c=>c.d);
+  if(dated.length<4)return "";
+  const days=[...new Set(dated.map(c=>c.d))].sort().slice(-14);
+  const idx=new Map(days.map((d,i)=>[d,i]));
+  const v=days.map(()=>0);
+  for(const c of dated){const i=idx.get(c.d); if(i!=null)v[i]++;}
+  const W=120,H=24,max=Math.max(...v,1);
+  const pts=v.map((n,i)=>`${(i/(v.length-1))*W},${H-2-(n/max)*(H-4)}`).join(" ");
+  return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linejoin="round" stroke-linecap="round"/></svg>`;}
+function renderKpis(b){
+  $("#kpis").innerHTML=(b.kpis||[]).map((k,i)=>`
+    <div class="kpi t-${TONE[k.tone]||"sky"}"><div class="l">${esc(k.label)}</div>
+      <div class="v">${esc(k.val)}</div><div class="s">${esc(k.sub||"")}</div>
+      <div class="d">${esc(k.delta||"")}</div>${i===0?sparkline(b.comments):""}</div>`).join("");
+  $("#alertbox").innerHTML=b.alert?`<div class="alert">⚠️ ${b.alert}</div>`:"";}
+function renderOverview(b){
+  const cs=b.comments||[];
+  // 100% sentiment distribution bar
+  const cnt={pos:0,neu:0,neg:0};
+  for(const c of cs)if(cnt[c.s]!=null)cnt[c.s]++;
+  const tot=cnt.pos+cnt.neu+cnt.neg;
+  if(tot){
+    $("#c-dist").innerHTML=["pos","neu","neg"].filter(s=>cnt[s]).map(s=>{
+      const p=Math.round(100*cnt[s]/tot);
+      return `<div style="background:${SVAR[s]};flex:0 0 ${100*cnt[s]/tot}%"
+        data-tip="${SNAME[s]}: <b>${fmt(cnt[s])}</b> (${p}%)">${p>=8?p+"%":""}</div>`;}).join("");
+    hookTips($("#c-dist"));
+  } else if(b.sent){
+    $("#c-dist").innerHTML=["pos","neu","neg"].map(s=>{
+      const p=b.sent[s]||0;
+      return p?`<div style="background:${SVAR[s]};flex:0 0 ${p}%">${p>=8?p+"%":""}</div>`:"";}).join("");
+  }
+  // clickable theme strip (raw theme keys from the comments themselves)
+  const thc=new Map();
+  for(const c of cs){const t=c.th; if(t)thc.set(t,(thc.get(t)||0)+1);}
+  const strip=[...thc.entries()].sort((a,b2)=>b2[1]-a[1]).slice(0,10);
+  $("#c-themestrip").innerHTML=strip.map(([t,n])=>
+    `<span class="chip click c-sky" data-th="${esc(t)}">${esc(prettyTh(t))} <b>${fmt(n)}</b></span>`).join("")
+    ||'<span class="empty" style="padding:0">No themes yet</span>';
+  $("#c-themestrip").querySelectorAll(".chip").forEach(ch=>
+    ch.addEventListener("click",()=>gotoComments(ch.dataset.th)));
+  const dated=cs.filter(c=>c.d);
+  const days=[...new Set(dated.map(c=>c.d))].sort();
+  const idx=new Map(days.map((d,i)=>[d,i]));
+  const series=["pos","neu","neg"].map(s=>({name:SNAME[s],color:SVAR[s],values:days.map(()=>0)}));
+  for(const c of dated){const si={pos:0,neu:1,neg:2}[c.s]; if(si!=null)series[si].values[idx.get(c.d)]++;}
+  $("#lg-line").innerHTML=["pos","neu","neg"].map(s=>`<span><i style="background:${SVAR[s]}"></i>${SNAME[s]}</span>`).join("");
+  lineChart("#c-line",days,series);
+  const counts={pos:0,neu:0,neg:0};
+  for(const c of cs)if(counts[c.s]!=null)counts[c.s]++;
+  donut("#c-donut",["pos","neu","neg"].map(s=>({label:SNAME[s],value:counts[s],color:SVAR[s]})));
+  $("#c-timeline").innerHTML=(b.timeline||[]).map(t=>
+    `<li><span class="d">${esc(t.d)}</span><span>${esc(t.t)}</span></li>`).join("")||'<li class="empty">No timeline</li>';
+  const top=[...cs].sort((a,b2)=>(b2.lk||0)-(a.lk||0)).slice(0,5);
+  $("#c-top").innerHTML=top.map(commentCard).join("")||'<div class="empty">No comments</div>';}
+function commentCard(c){
+  const flag=LF[c.lang]||"🌐";
+  return `<div class="cc"><div class="hd">
+      <span class="lk">♥ ${fmt(c.lk)}</span><span class="u">@${esc(c.u)}</span><span>${flag}</span>
+      <span class="minichip ${SCHIP[c.s]||"c-neu"}">${SNAME[c.s]||c.s}</span>
+      ${c.th?`<span class="minichip c-sky thclick" data-th="${esc(c.th)}" style="cursor:pointer" title="Filter by this theme">${esc(prettyTh(c.th))}</span>`:""}
+      ${c.new?'<span class="minichip c-lav">NEW</span>':""}
+      ${c.issue?'<span class="minichip c-neg">ISSUE</span>':""}
+      ${c.vid?`<span style="margin-left:auto">${esc(c.vid)}</span>`:""}</div>
+    <div class="orig" ${c.rtl?'dir="rtl"':""}>${esc(c.orig)}</div>
+    ${c.en?`<div class="en">${esc(c.en)}</div>`:""}</div>`;}
+function renderComments(b){
+  const cs=b.comments||[];
+  const defs=[["all","All",cs.length],
+    ["pos","Positive",cs.filter(c=>c.s==="pos").length],
+    ["neu","Neutral",cs.filter(c=>c.s==="neu").length],
+    ["neg","Negative",cs.filter(c=>c.s==="neg").length],
+    ["new","New",cs.filter(c=>c.new).length],
+    ["issue","Issue",cs.filter(c=>c.issue).length]];
+  $("#cfilters").innerHTML=defs.map(([k,l,n])=>
+    `<span class="chip click ${k==="neg"||k==="issue"?"c-neg":k==="pos"?"c-pos":k==="new"?"c-lav":"c-sky"} ${state.cfilter===k?"on":""}"
+      data-f="${k}">${l} <b>${n}</b></span>`).join("");
+  $("#cfilters").querySelectorAll(".chip").forEach(ch=>ch.addEventListener("click",()=>{
+    state.cfilter=ch.dataset.f; state.cpage=0; renderComments(B());}));
+  // theme + post selects (rebuild options, keep selection)
+  const thsel=$("#cthemesel"), vsel=$("#cvidsel");
+  const ths=[...new Set(cs.map(c=>c.th).filter(Boolean))].sort();
+  thsel.innerHTML='<option value="">All themes</option>'+
+    ths.map(t=>`<option value="${esc(t)}">${esc(prettyTh(t))}</option>`).join("");
+  thsel.value=ths.includes(state.ctheme)?state.ctheme:"";
+  if(thsel.value!==state.ctheme)state.ctheme=thsel.value;
+  const vids=[...new Set(cs.map(c=>c.vid).filter(Boolean))].sort();
+  vsel.innerHTML='<option value="">All posts</option>'+
+    vids.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+  vsel.value=vids.includes(state.cvid)?state.cvid:"";
+  if(vsel.value!==state.cvid)state.cvid=vsel.value;
+  const q=state.search.toLowerCase();
+  let list=cs.filter(c=>
+    (state.cfilter==="all"||(state.cfilter==="new"?c.new:state.cfilter==="issue"?c.issue:c.s===state.cfilter))&&
+    (!state.ctheme||c.th===state.ctheme)&&
+    (!state.cvid||c.vid===state.cvid)&&
+    (!q||(c.orig||"").toLowerCase().includes(q)||(c.en||"").toLowerCase().includes(q)));
+  const PER=50, pages=Math.max(1,Math.ceil(list.length/PER));
+  state.cpage=Math.min(state.cpage,pages-1);
+  $("#c-feed").innerHTML=list.slice(state.cpage*PER,(state.cpage+1)*PER).map(commentCard).join("")
+    ||'<div class="empty">Nothing matches</div>';
+  $("#cpager").innerHTML=pages>1?`
+    <button class="pillbtn" id="pprev" ${state.cpage===0?"disabled":""}>‹ Prev</button>
+    <span>Page ${state.cpage+1} / ${pages} · ${fmt(list.length)} comments</span>
+    <button class="pillbtn" id="pnext" ${state.cpage>=pages-1?"disabled":""}>Next ›</button>`:
+    `<span>${fmt(list.length)} comments</span>`;
+  const pv=$("#pprev"),nx=$("#pnext");
+  if(pv)pv.addEventListener("click",()=>{state.cpage--;renderComments(B());});
+  if(nx)nx.addEventListener("click",()=>{state.cpage++;renderComments(B());});
+  $("#c-feed").querySelectorAll(".thclick").forEach(ch=>ch.addEventListener("click",()=>{
+    state.ctheme=ch.dataset.th; state.cpage=0; renderComments(B());}));}
+function renderInsights(b){
+  const kind2c={pos:"var(--pos)",risk:"var(--neg)",gold:"var(--s8)",purple:"var(--s5)",navy:"var(--s1)"};
+  pillBars("#c-themes",(b.themes||[]).map(t=>({label:t.name,
+    segs:[{key:"mentions",val:t.n,color:kind2c[t.kind]||"var(--s1)"}]})),
+    (r,s)=>`${r.label}: <b>${fmt(s.val)}</b>`);
+  pillBars("#c-intent",(b.intent||[]).map(i=>({label:i.label,
+    segs:[{key:"share",val:i.pct,color:`var(--${{green:"pos",red:"neg",purple:"s5",navy:"s1",gold:"s8"}[i.tone]||"s1"})`}]})),
+    (r,s)=>`${r.label}: <b>${s.val}%</b>`);
+  $("#c-variants").innerHTML=(b.variants||[]).map(v=>
+    `<div class="hrow" style="grid-template-columns:34px 1fr auto">
+      <div>${esc(v.rank)}</div><div style="min-width:0"><b style="color:var(--ink)">${esc(v.name)}</b>
+      <span style="color:var(--muted)"> — ${esc(v.note)}</span></div>
+      <span class="minichip ${v.tone==="green"?"c-pos":v.tone==="red"?"c-neg":"c-sky"}">${esc(v.tag)}</span></div>`).join("")
+    ||'<div class="empty">No topics</div>';
+  const langs=b.pipeline&&b.pipeline.langs;
+  if(langs&&langs.length)
+    pillBars("#c-langs",langs.map(l=>({label:l.name,segs:[{key:"count",val:l.n,color:"var(--s5)"}]})),
+      (r,s)=>`${r.label}: <b>${fmt(s.val)}</b>`);
+  else $("#c-langs").innerHTML='<div class="empty">Language mix is recorded for pipeline-scraped brands</div>';}
+function renderBrands(b){
+  const p=b.pipeline;
+  if(p&&p.inputs&&p.inputs.length){
+    $("#c-inputs").innerHTML=p.inputs.map(i=>
+      `<span class="chip ${i.type==="url"?"c-peach":"c-sky"}" title="${esc(i.value)}">
+        <span style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+        ${esc(i.type==="url"?i.value.replace(/^https?:\/\/(www\.)?/,""):i.value)}</span> <b>${fmt(i.n)}</b></span>`).join("");
+  }else $("#c-inputs").innerHTML='<div class="empty">Tracked inputs are recorded for pipeline-scraped brands</div>';
+  $("#lg-sov").innerHTML=`<span><i style="background:var(--s1)"></i>own brand</span>
+    <span><i style="background:var(--s8)"></i>competitor</span>`;
+  pillBars("#c-sov",((p&&p.sov)||[]).map(s=>({label:s.brand,
+    segs:[{key:"mentions",val:s.n,color:s.own?"var(--s1)":"var(--s8)"}]})),
+    (r,s)=>`${r.label}: <b>${fmt(s.val)}</b> mentions`);
+  pillBars("#c-markets",((p&&p.markets)||[]).map(m=>({label:m.name,
+    segs:[{key:"mentions",val:m.n,color:"var(--pos)"}]})),
+    (r,s)=>`${r.label}: <b>${fmt(s.val)}</b>`);
+  $("#c-channels").innerHTML=((b.channels||[]).map(c=>
+    `<div class="hrow" style="grid-template-columns:1fr auto auto">
+      <div class="rl" style="text-align:left;color:var(--ink)">${esc(c.name)}</div>
+      <span class="minichip ${c.status==="ok"?"c-pos":c.status==="warn"?"c-neg":"c-sky"}">${esc(c.status)}</span>
+      <span style="color:var(--muted);font-size:12px">${esc(c.note)}</span></div>`).join("")
+    +(b.channelNote?`<p style="font-size:12px;color:var(--muted);margin:10px 0 0">${esc(b.channelNote)}</p>`:""))
+    ||'<div class="empty">No channel signals</div>';
+  // portfolio compare across every brand in the snapshot
+  const rows=DATA.order.map(id=>{
+    const br=DATA.brands[id]; if(!br)return "";
+    const cs2=br.comments||[]; const n=cs2.length;
+    const s=br.sent||{}; const net=(s.pos||0)-(s.neg||0);
+    const buy=cs2.filter(c=>c.th==="price_value"||c.th==="availability").length;
+    const health=(br.kpis||[]).find(k=>/HEALTH/i.test(k.label));
+    return `<tr class="cmprow ${id===state.active?"":""}" data-b="${esc(id)}"
+        style="${id===state.active?"font-weight:650":""}">
+      <td style="color:var(--ink)">${esc(br.meta.name)}${id===state.active?" ◂":""}</td>
+      <td>${fmt(n||"—")}</td>
+      <td><span class="minichip c-pos">${s.pos||0}%</span></td>
+      <td><span class="minichip c-neg">${s.neg||0}%</span></td>
+      <td style="font-weight:650;color:${net>=0?"var(--mintI)":"var(--roseI)"}">${net>=0?"+":""}${net}</td>
+      <td>${health?esc(health.val):"—"}</td>
+      <td style="color:var(--muted)">${esc(br.meta.market||"")}</td></tr>`;}).join("");
+  $("#c-compare").innerHTML=`<table class="tb">
+    <tr><th>Brand</th><th>Comments</th><th>Positive</th><th>Negative</th><th>Net</th><th>Health</th><th>Market</th></tr>${rows}</table>`;
+  $("#c-compare").querySelectorAll(".cmprow").forEach(tr=>
+    tr.addEventListener("click",()=>setBrand(tr.dataset.b)));}
+function renderHealth(b){
+  $("#c-health").innerHTML=(b.health||[]).map(h=>`
+    <div class="kpi t-${TONE[h.tone]||"sky"}"><div class="l">${esc(h.label)}</div>
+    <div class="v">${esc(h.val)}</div><div class="s">${esc(h.sub||"")}</div></div>`).join("");
+  $("#c-deltas").innerHTML=(b.deltas||[]).map(d=>`
+    <div class="hrow" style="grid-template-columns:1fr auto">
+      <div class="rl" style="text-align:left">${esc(d.label)}
+        <span style="color:var(--muted)"> — ${esc(d.note)}</span></div>
+      <span class="minichip ${d.tone==="red"?"c-neg":d.tone==="green"?"c-pos":"c-sky"}">${esc(d.pct)}</span></div>`).join("")
+    ||'<div class="empty">First snapshot — no deltas yet</div>';
+  $("#c-adv").innerHTML=(b.advocates||[]).map(a=>`
+    <div class="cc"><div class="hd"><span>${esc(a.icon||"🌟")}</span>
+      <span class="u">@${esc(a.u)}</span><span class="minichip c-pos">${esc(a.tag)}</span></div>
+      <div class="en" style="border:0;padding:0;margin:0">“${esc(a.q)}”</div></div>`).join("")
+    ||'<div class="empty">No advocates yet</div>';
+  $("#c-critical").innerHTML=(b.critical&&b.critical.length)?
+    `<table class="tb"><tr><th>User</th><th>Comment</th><th>Likes</th><th>Priority</th><th>Status</th></tr>`+
+    b.critical.map(c=>`<tr><td>@${esc(c.u)}</td><td style="max-width:420px">${esc(c.c)}</td>
+      <td>${esc(c.lk)}</td><td><span class="sev ${esc(String(c.pri).split(" ")[0])}">${esc(c.pri)}</span></td>
+      <td style="color:var(--roseI);font-weight:600">${esc(c.st)}</td></tr>`).join("")+"</table>"
+    :'<div class="empty">No critical comments 🎉</div>';
+  $("#c-respq").textContent=b.respQuality||"";
+  $("#c-risks").innerHTML=(b.risks||[]).map(r=>`
+    <div class="rk"><span class="sev ${esc(String(r.sev).split(" ")[0])}">${esc(r.sev)}</span>
+      <div class="t">${esc(r.title)}</div><div class="d">${esc(r.desc)}</div>
+      <blockquote>“${esc(r.q)}”</blockquote><div class="by">${esc(r.by)}</div>
+      <div class="sla">SLA · ${esc(r.sla)}</div>
+      ${r.reply?`<div class="reply"><div class="rt">SUGGESTED REPLY</div>
+        <div class="rb">${esc(r.reply)}</div>
+        <button class="pillbtn copybtn" data-c="${esc(r.reply)}">Copy</button></div>`:""}</div>`).join("")
+    ||'<div class="empty">No risks flagged</div>';
+  $("#c-risks").querySelectorAll(".copybtn").forEach(btn=>btn.addEventListener("click",()=>{
+    const t=btn.dataset.c;
+    const done=()=>{btn.textContent="Copied ✓";setTimeout(()=>btn.textContent="Copy",1500);};
+    if(navigator.clipboard&&navigator.clipboard.writeText)
+      navigator.clipboard.writeText(t).then(done,done);
+    else{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);
+      ta.select();try{document.execCommand("copy");}catch(e){}ta.remove();done();}}));
+  $("#c-recos").innerHTML=(b.recos||[]).map(r=>`
+    <div class="rk"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span class="minichip ${r.tone==="red"?"c-neg":r.tone==="green"?"c-pos":r.tone==="purple"?"c-lav":"c-sky"}">#${r.n} · ${esc(r.when)}</span>
+      <div class="t" style="margin:0">${esc(r.title)}</div></div>
+      <div class="d" style="margin-top:6px">${esc(r.desc)}</div></div>`).join("")
+    ||'<div class="empty">No actions yet</div>';
+  $("#c-takeaway").innerHTML=b.takeaway?("<b>Takeaway — </b>"+esc(b.takeaway)):"";}
+function renderPosts(b){
+  $("#c-posts").innerHTML=(b.videos||[]).map(v=>`
+    <div class="card"><h3>${esc(v.name)} <small style="color:var(--muted)">· ${esc(v.id)}</small></h3>
+      <div class="stat2">${(v.stats||[]).map(kv=>
+        `<span class="k">${esc(kv[0])}</span><span class="v">${esc(kv[1])}</span>`).join("")}</div>
+      <p style="font-size:12.5px;margin:12px 0 0;padding:10px 13px;border-radius:10px;
+        background:${v.tone==="red"?"var(--rose)":"var(--mint)"};
+        color:${v.tone==="red"?"var(--roseI)":"var(--mintI)"}">${esc(v.insight)}</p></div>`).join("")
+    ||'<div class="card wide"><div class="empty">No posts</div></div>';}
+function renderTrend(){
+  const T=window.TREND;
+  if(!T){$("#c-trend").innerHTML='<div class="card"><div class="empty">No trend analysis yet — generate one with <code>python -m dabur_listen insights</code> or import it.</div></div>';return;}
+  $("#c-trend").innerHTML=`
+    <div class="card wide" style="margin-bottom:14px">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px">
+        <span class="verdict" style="color:${T.verdict==="GO"?"var(--mintI)":"var(--roseI)"}">${esc(T.verdict)}</span>
+        <div><div style="font-weight:700">${esc(T.name)}${T.for?" — "+esc(T.for):""}</div>
+        <div style="color:var(--ink2);font-size:13px">${esc(T.vsub||"")}</div></div></div></div>
+    <div class="kpis">${(T.snapshot||[]).map(s=>`
+      <div class="kpi t-${TONE[s.tone]||"sky"}"><div class="l">${esc(s.label)}</div>
+      <div class="v" style="font-size:20px">${esc(s.val)}</div><div class="s">${esc(s.sub||"")}</div></div>`).join("")}</div>
+    <div class="grid">
+      ${T.what?`<div class="card wide"><h3>What is it</h3><p style="font-size:13px;line-height:1.6;color:var(--ink2);margin:0">${esc(T.what)}</p></div>`:""}
+      ${(T.sections||[]).map(sec=>`<div class="card"><h3>${esc(sec.title)}</h3>
+        <p style="font-size:12.5px;line-height:1.6;color:var(--ink2);margin:0;white-space:pre-line">${esc(sec.body)}</p></div>`).join("")}
+    </div>`;}
+window.renderAll=function(){const b=B(); if(!b)return;
+  renderHeader(b);renderKpis(b);renderOverview(b);renderComments(b);
+  renderInsights(b);renderBrands(b);renderHealth(b);renderPosts(b);renderTrend();};
+
+$("#csearch").addEventListener("input",e=>{state.search=e.target.value;state.cpage=0;renderComments(B());});
+$("#cthemesel").addEventListener("change",e=>{state.ctheme=e.target.value;state.cpage=0;renderComments(B());});
+$("#cvidsel").addEventListener("change",e=>{state.cvid=e.target.value;state.cpage=0;renderComments(B());});
+addEventListener("resize",()=>{const b=B(); if(b)renderOverview(b);});
+
+loadSaved();
+if(!DATA.order.length){document.querySelector(".viz-root").insertAdjacentHTML("beforeend",
+  '<div class="empty">No brands in this snapshot — run <code>python -m dabur_listen hub</code> after processing data.</div>');}
+else{state.active=DATA.order[0];buildSwitcher();renderAll();}
+})();
+</script>

@@ -23,6 +23,8 @@ brands:
       aliases: ["dabur herbal", "dabur toothpaste", "معجون دابر"]
     - name: Dabur Miswak
       aliases: ["miswak", "دابر مسواك", "meswak"]
+    - name: ORS Hair Care
+      aliases: ["ors", "ors olive oil", "orshaircare", "او ار اس", "أو آر إس"]
   competitors:
     - name: Sunsilk
       aliases: ["sunsilk", "صانسيلك"]
@@ -44,6 +46,7 @@ markets:
   - { code: UAE, name: United Arab Emirates, hints: ["dubai", "abu dhabi", "دبي", "الامارات", "AED", "dirham"] }
   - { code: KSA, name: Saudi Arabia, hints: ["riyadh", "jeddah", "الرياض", "السعودية", "SAR", "ريال"] }
   - { code: EGY, name: Egypt, hints: ["cairo", "مصر", "القاهرة", "EGP", "جنيه", "egyptian arabic dialect"] }
+  - { code: IRQ, name: Iraq, hints: ["baghdad", "العراق", "بغداد", "IQD", "دينار", "iraqi arabic dialect", "يخبل", "كلش"] }
   - { code: MAR, name: Morocco, hints: ["casablanca", "المغرب", "darija dialect", "MAD", "درهم"] }
   - { code: NGA, name: Nigeria, hints: ["lagos", "abuja", "naija", "NGN", "naira", "pidgin", "hausa", "yoruba"] }
   - { code: KEN, name: Kenya, hints: ["nairobi", "kenya", "KES", "swahili", "sheng slang", "bob (KES slang)"] }

@@ -75,6 +75,52 @@ def ingest_keywords_cmd(keyword, platforms, tag):
     click.echo(f"Done — {total} new comments. Next: python -m dabur_listen process")
 
 
+@cli.command("import-file")
+@click.argument("paths", nargs=-1, required=True, type=click.Path(exists=True, dir_okay=False))
+@click.option("--platform", default=None, help="tiktok/instagram/... (auto-detected from URLs if omitted)")
+@click.option("--tag", default=None, help="Tracking tag")
+def import_file_cmd(paths, platform, tag):
+    """Import Apify dataset exports (.json / .xlsx / .csv) into the DB."""
+    from .importer import import_file
+    total = 0
+    with db.connect() as con:
+        for path in paths:
+            try:
+                rows = import_file(path, platform, tag)
+            except Exception as e:
+                click.echo(f"  ✗ {path}: {e}", err=True)
+                continue
+            n = db.insert_comments(con, rows)
+            total += n
+            click.echo(f"  ✓ {path}: {len(rows)} items, {n} new comments stored")
+        con.execute("INSERT INTO runs(kind, detail, items) VALUES('ingest', ?, ?)",
+                    (f"import:{len(paths)} files", total))
+    click.echo(f"Done — {total} new comments. Next: python -m dabur_listen process")
+
+
+@cli.command()
+@click.option("--out", type=click.Path(dir_okay=False), default=None,
+              help="Output path (default data/exports/hub.html)")
+@click.option("--demo", is_flag=True, help="Sample data instead of the DB")
+@click.option("--no-samples", is_flag=True, help="Exclude the built-in sample brands")
+def hub(out, demo, no_samples):
+    """Build the multi-brand Sentiment Hub (all tabs, self-contained HTML)."""
+    from .hub import build_hub
+    path = build_hub(out, demo=demo, include_samples=not no_samples)
+    click.echo(f"Wrote {path} — open in a browser or share as a Claude artifact.")
+
+
+@cli.command()
+@click.option("--brand", default=None, help="Only this brand id (default: all + trend)")
+def insights(brand):
+    """Have Claude write the strategist layer: risks with suggested replies,
+    action plan, timeline, variants, channels, takeaway, and the Trend Radar.
+    Results land in data/insights/ and are overlaid on the next `hub` build."""
+    from .insights import generate_all
+    written = generate_all(brand)
+    click.echo(f"Wrote insights for: {', '.join(written)}. Rebuild with: python -m dabur_listen hub")
+
+
 def _chunks(rows, size):
     for i in range(0, len(rows), size):
         yield rows[i:i + size]
@@ -197,6 +243,17 @@ def export(path):
         df = pd.read_sql_query("SELECT * FROM comments", con)
     df.to_csv(path, index=False)
     click.echo(f"Wrote {len(df)} rows to {path}")
+
+
+@cli.command()
+@click.option("--out", type=click.Path(dir_okay=False), default=None,
+              help="Output path (default data/exports/dashboard.html)")
+@click.option("--demo", is_flag=True, help="Use built-in sample data instead of the DB")
+def snapshot(out, demo):
+    """Build a self-contained HTML dashboard (shareable, no server or keys)."""
+    from .artifact import build_snapshot
+    path = build_snapshot(out, demo=demo)
+    click.echo(f"Wrote {path} — open it in a browser or share it as a Claude artifact.")
 
 
 @cli.command()

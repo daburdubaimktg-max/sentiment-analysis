@@ -1,0 +1,88 @@
+{
+  "alert": "<b>PRODUCT RISK:</b> The bundled toothbrush is the #1 complaint driver — six separate users call it 'harmful to gums' / 'dishwashing wire'. The paste's reputation is carrying a bad accessory. Counterfeits are the #2 threat: loyal users are warning each other ('the fake one causes cavities — check the box color').",
+  "timeline": [
+    { "d": "May 24", "t": "Miss Qurunfula (dentist creator) reel goes live — instant loyalty wave in comments.", "tone": "green" },
+    { "d": "May–Jun", "t": "Long-time users surface en masse: '8 years', 'whole household', 'switched back after trying others'.", "tone": "green" },
+    { "d": "Jun 10+", "t": "Counterfeit warnings appear from the community itself — fake box is lighter in color.", "tone": "red" },
+    { "d": "Jun 15+", "t": "Fluoride debate splits the audience: fans buy BECAUSE it's fluoride-free, skeptics quit over it.", "tone": "gold" },
+    { "d": "Jun 22", "t": "Dataset exported — zero brand replies recorded across all 217 comments.", "tone": "red" }
+  ],
+  "variants": [
+    { "rank": "🥇", "name": "Clove (hero SKU)", "note": "the identity of the brand — 'Miss Clove' memes carry the ad", "tag": "Cult Product", "tone": "green" },
+    { "rank": "🥈", "name": "Charcoal variant", "note": "spontaneous praise: 'the charcoal one is amazing and cheap'", "tag": "Rising ↑", "tone": "green" },
+    { "rank": "🥉", "name": "Price point (3,000 IQD)", "note": "cited twice as a reason to buy — value is part of the product", "tag": "Advantage", "tone": "gold" },
+    { "rank": "4", "name": "Bundled toothbrush", "note": "6 complaints — 'hurts gums', 'wire for dishes'", "tag": "Fix This ↓", "tone": "red" },
+    { "rank": "5", "name": "Original vs fake", "note": "community verifies by box shade — brand has no official guide", "tag": "Risk", "tone": "red" }
+  ],
+  "channels": [
+    { "name": "Pharmacies (Iraq)", "status": "ok", "note": "confirmed at 3,000 IQD — price praised" },
+    { "name": "General retail (Iraq)", "status": "warn", "note": "counterfeits circulating in the same channel" },
+    { "name": "Instagram resellers", "status": "warn", "note": "@cosmatic_retal_212 plugged by a fan — unofficial, unverified" },
+    { "name": "International (Finland ask)", "status": "warn", "note": "'Do they deliver to Finland?' — diaspora demand, no answer" },
+    { "name": "How-to-order", "status": "warn", "note": "'How do we order it?' went unanswered — free purchase intent leaking" }
+  ],
+  "channelNote": "Distribution reads healthy at pharmacy level, but every availability question in the thread went unanswered — and counterfeits share the shelf.",
+  "respQuality": "0 brand replies across 217 comments — a 0% response rate on a post with two direct purchase questions, six brush complaints, two counterfeit warnings and one viral-risk nausea complaint. The community is doing the brand's CS for free (peers answering peers); the brand is invisible in its own thread.",
+  "risks": [
+    {
+      "sev": "CRITICAL",
+      "title": "Bundled toothbrush damaging trust (6 users)",
+      "desc": "Repeated, specific and physical: 'harmful for sensitive gums', 'it's dishwashing wire I swear', 'hurts so much I can't use it'. Every one of these sits under praise for the paste — the accessory is dragging the hero product.",
+      "q": "The paste is really good, but the brush is terrible — it's for dishes, not teeth",
+      "by": "@shuruq__21 and 5 others",
+      "sla": "Product review this week; reply today",
+      "reply": "تحية طيبة 🙏 شكراً لملاحظتك — وصلت لفريق المنتج. ننصح باستخدام فرشاة ناعمة مع المعجون إذا كانت لثتك حساسة، وجاري تقييم الفرشاة المرفقة. رأيك يهمنا 🌿 (Thank you — this has reached our product team. If your gums are sensitive we recommend a soft-bristle brush with the paste; the bundled brush is under review.)"
+    },
+    {
+      "sev": "CRITICAL",
+      "title": "Counterfeits eroding the franchise",
+      "desc": "Two loyalists independently warn the community: fakes exist, cause cavities and smell wrong; the tell is a lighter box. When customers invent your anti-counterfeit guide for you, the brand is late.",
+      "q": "Make sure you get the original — the fake one actually causes cavities and smells bad (the box color is lighter)",
+      "by": "@um_hamody-style loyalist · high-trust comment",
+      "sla": "Publish authenticity guide within 7 days",
+      "reply": "شكراً لتنبيه المجتمع ❤️ المنتج الأصلي يُباع في الصيدليات المعتمدة وعلبته بالألوان الغامقة الرسمية. سننشر دليل التحقق قريباً — وإذا صادفت منتجاً مقلداً راسلنا مباشرة. (Thank you for protecting the community — genuine product is sold in licensed pharmacies with the official deep-color box. Verification guide coming; DM us any counterfeit sightings.)"
+    },
+    {
+      "sev": "HIGH",
+      "title": "Fluoride-free is splitting the audience",
+      "desc": "Informed users quit over it ('the most important anti-cavity ingredient — so I dropped it') while fans buy because of it. The brand is letting the comment section run its ingredient strategy debate unmoderated.",
+      "q": "If it's fluoride-free, why would I use it? I don't even rinse for 30 minutes after brushing, for the fluoride",
+      "by": "@ayainbaghdad + 3 similar",
+      "sla": "FAQ + positioning within 2 weeks",
+      "reply": "سؤال ممتاز 🌿 تركيبتنا تعتمد على القرنفل والأعشاب للحماية الطبيعية، وهي خيار لمن يفضّل منتجاً خالياً من الفلورايد. لمن يرغب بالفلورايد لدينا خيارات أخرى ضمن عائلة دابر. (Great question — our formula uses clove and herbs for natural protection, made for those who prefer fluoride-free. Dabur's range also includes fluoride options.)"
+    },
+    {
+      "sev": "MEDIUM",
+      "title": "Severe taste/nausea account, urging influencer to drop the ad",
+      "desc": "One vivid, emotional complaint (vomiting, day-long nausea) addressed to the creator by name. Low likes now, high virality potential if screenshot-shared. Needs private, empathetic CS outreach — not a public debate.",
+      "q": "The taste is unbearable… I threw up and spent the whole day nauseous. Fatouma, don't do this ad — there are far better options",
+      "by": "@baneen.mohammedd",
+      "sla": "Private outreach within 24h",
+      "reply": "(Private DM) نأسف جداً لتجربتك 💔 سلامتك أهم شيء عندنا — نرجو التواصل معنا لنفهم الحالة ونعوضك. (We're truly sorry about your experience — your wellbeing matters most. Please DM us so we can understand what happened and make it right.)"
+    },
+    {
+      "sev": "MEDIUM",
+      "title": "Origin-based boycott comment (UAE production)",
+      "desc": "Single politically-motivated boycott call. Do not engage publicly — monitor for pickup; prepare a factual origin statement only if volume grows.",
+      "q": "Made in the UAE… so boycott",
+      "by": "single commenter · no traction yet",
+      "sla": "Monitor only",
+      "reply": ""
+    }
+  ],
+  "recos": [
+    { "n": 1, "title": "Fix or drop the bundled toothbrush", "when": "THIS WEEK", "tone": "red",
+      "desc": "Six organic complaints is a product signal, not noise. Either upgrade to a soft-bristle brush or unbundle — and say so publicly in the thread. Cheapest trust win available." },
+    { "n": 2, "title": "Launch an authenticity campaign — own the 'check the box' rule", "when": "7 DAYS", "tone": "red",
+      "desc": "The community already invented the verification method (box shade). Formalize it: one reel with Miss Qurunfula showing real-vs-fake, pinned comment, pharmacy-channel poster. Counterfeit cavities are being blamed on YOUR brand." },
+    { "n": 3, "title": "Publish the fluoride positioning FAQ", "when": "2 WEEKS", "tone": "gold",
+      "desc": "Two audiences, one product: 'natural/fluoride-free' fans and fluoride-loyal skeptics. Message the first, don't fight the second — point them to fluoride SKUs in the range. Stop losing informed users silently." },
+    { "n": 4, "title": "Extend the Miss Qurunfula partnership", "when": "THIS MONTH", "tone": "green",
+      "desc": "Trust metrics are exceptional — 'blind trust in you', 'I'll try it on your word'. She converted skeptics in one reel. Series format: real-vs-fake, brushing technique, kids' usage (asked twice), braces care (asked twice)." },
+    { "n": 5, "title": "Answer every purchase question within 24h", "when": "ONGOING", "tone": "green",
+      "desc": "'How do we order?' and 'Do they deliver to Finland?' died unanswered. Pin ordering info; route diaspora demand to e-commerce. This is free revenue on the floor." },
+    { "n": 6, "title": "Weaponize the price point", "when": "NEXT CAMPAIGN", "tone": "purple",
+      "desc": "3,000 IQD is being praised organically vs imported pastes. 'Better than Crest/Sensodyne at a third of the price' is being written by users — echo it in creative." }
+  ],
+  "takeaway": "This is a beloved heritage product with a cult variant, a trusted face, and a price advantage — being undermined by three fixable things: a bad bundled brush, unpoliced counterfeits, and total brand silence in its own comment section. Fix the accessory, own authenticity, answer the thread — the love is already there."
+}

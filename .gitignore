@@ -8,3 +8,4 @@ data/*.db-journal
 data/exports/
 .streamlit/secrets.toml
 src/*.egg-info/
+data/hub_state.json

@@ -1,0 +1,472 @@
+<title>Dabur Social Listening</title>
+<style>
+  .viz-root {
+    /* ── clean white / pastel theme ── */
+    --page: #ffffff; --card: #ffffff; --card-brd: #edf0f5;
+    --shadow: 0 1px 2px rgba(28,36,52,.04), 0 10px 30px rgba(28,36,52,.05);
+    --ink: #1c2434; --ink-2: #55617a; --muted: #949db0;
+    --grid: #f0f2f7; --baseline: #dfe3ec; --track: #f3f5f9;
+    --mint: #e6f7ef; --rose: #fdeaea; --lav: #edeafb; --peach: #fff1e3; --sky: #e8f1fd;
+    --mint-ink: #0e7a52; --rose-ink: #b23a3a; --lav-ink: #5b4bc4; --peach-ink: #b06018; --sky-ink: #1d5fb8;
+    --pos: #1baf7a; --neu: #a3abbd; --neg: #e35d5d;
+    --s1: #5b93e0; --s5: #8f83dd; --s8: #f0925f;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--ink); background: var(--page);
+    padding: 26px clamp(14px, 3vw, 40px); min-height: 100vh; box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-color-scheme: dark) {
+    .viz-root {
+      --page: #101319; --card: #171b23; --card-brd: #242a36;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.25);
+      --ink: #f2f4f8; --ink-2: #b8c0d0; --muted: #7e8798;
+      --grid: #232935; --baseline: #333b4a; --track: #1f2530;
+      --mint: #123527; --rose: #3a2022; --lav: #251f3f; --peach: #38281a; --sky: #16283e;
+      --mint-ink: #4fd6a4; --rose-ink: #f09a9a; --lav-ink: #b0a6f2; --peach-ink: #f0b984; --sky-ink: #85b6f2;
+      --pos: #2ec48c; --neu: #6f7889; --neg: #e97a7a;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    --page: #101319; --card: #171b23; --card-brd: #242a36;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.25);
+    --ink: #f2f4f8; --ink-2: #b8c0d0; --muted: #7e8798;
+    --grid: #232935; --baseline: #333b4a; --track: #1f2530;
+    --mint: #123527; --rose: #3a2022; --lav: #251f3f; --peach: #38281a; --sky: #16283e;
+    --mint-ink: #4fd6a4; --rose-ink: #f09a9a; --lav-ink: #b0a6f2; --peach-ink: #f0b984; --sky-ink: #85b6f2;
+    --pos: #2ec48c; --neu: #6f7889; --neg: #e97a7a;
+  }
+  :root[data-theme="light"] .viz-root {
+    --page: #ffffff; --card: #ffffff; --card-brd: #edf0f5;
+    --shadow: 0 1px 2px rgba(28,36,52,.04), 0 10px 30px rgba(28,36,52,.05);
+    --ink: #1c2434; --ink-2: #55617a; --muted: #949db0;
+    --grid: #f0f2f7; --baseline: #dfe3ec; --track: #f3f5f9;
+    --mint: #e6f7ef; --rose: #fdeaea; --lav: #edeafb; --peach: #fff1e3; --sky: #e8f1fd;
+    --mint-ink: #0e7a52; --rose-ink: #b23a3a; --lav-ink: #5b4bc4; --peach-ink: #b06018; --sky-ink: #1d5fb8;
+    --pos: #1baf7a; --neu: #a3abbd; --neg: #e35d5d;
+  }
+  .viz-root * { box-sizing: border-box; }
+
+  .hdr { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .hdr h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -0.02em; }
+  .badge { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 999px;
+           background: var(--lav); color: var(--lav-ink); letter-spacing: .04em; }
+  .sub { color: var(--muted); font-size: 12.5px; margin: 6px 0 20px; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .filters select, .filters input, #f-search {
+    appearance: none; background: var(--card); color: var(--ink-2);
+    border: 1px solid var(--card-brd); border-radius: 999px; padding: 8px 16px;
+    font-size: 12.5px; font-family: inherit; box-shadow: var(--shadow); cursor: pointer;
+  }
+  .filters select:focus, #f-search:focus { outline: 2px solid var(--sky-ink); outline-offset: 1px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .kpi { border-radius: 18px; padding: 16px 18px; }
+  .kpi .lbl { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 6px; opacity: .75; }
+  .kpi .val { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+  .kpi.mint  { background: var(--mint);  color: var(--mint-ink); }
+  .kpi.rose  { background: var(--rose);  color: var(--rose-ink); }
+  .kpi.lav   { background: var(--lav);   color: var(--lav-ink); }
+  .kpi.peach { background: var(--peach); color: var(--peach-ink); }
+  .kpi.sky   { background: var(--sky);   color: var(--sky-ink); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--card-brd); border-radius: 18px;
+          padding: 18px 20px; min-width: 0; box-shadow: var(--shadow); }
+  .card h3 { margin: 0 0 14px; font-size: 11px; font-weight: 650; letter-spacing: .09em;
+             text-transform: uppercase; color: var(--muted); }
+  .card.wide { grid-column: 1 / -1; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11.5px; color: var(--ink-2); margin-bottom: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 9px; height: 9px; border-radius: 999px; display: inline-block; }
+
+  /* pill bars on a pale track */
+  .hrow { display: grid; grid-template-columns: 130px 1fr 46px; align-items: center; gap: 10px; margin: 7px 0; font-size: 12.5px; }
+  .hrow .rl { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
+  .hrow .rv { color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .track { display: flex; gap: 2px; height: 12px; background: var(--track); border-radius: 999px; overflow: hidden; }
+  .seg { min-width: 3px; cursor: default; transition: filter .15s; }
+  .seg:hover { filter: brightness(1.12); }
+
+  /* tracked inputs chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chipgroup { font-size: 11px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase;
+               color: var(--muted); width: 100%; margin: 8px 0 2px; }
+  .srcchip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px;
+             font-size: 12.5px; cursor: pointer; border: 1px solid transparent; max-width: 320px; }
+  .srcchip .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .srcchip b { font-variant-numeric: tabular-nums; font-weight: 650; }
+  .srcchip.kw  { background: var(--sky);  color: var(--sky-ink); }
+  .srcchip.url { background: var(--peach); color: var(--peach-ink); }
+  .srcchip.on  { border-color: currentColor; }
+  .srcchip:hover { filter: brightness(.97); }
+
+  svg text { fill: var(--muted); font-size: 10.5px; font-family: inherit; }
+  #tip { position: fixed; pointer-events: none; z-index: 50; background: var(--card);
+         border: 1px solid var(--card-brd); border-radius: 12px; padding: 8px 12px; font-size: 12px;
+         color: var(--ink); box-shadow: 0 8px 26px rgba(28,36,52,.14); display: none; max-width: 300px; }
+
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: 10.5px;
+            letter-spacing: .07em; text-transform: uppercase; padding: 8px 10px;
+            border-bottom: 1px solid var(--grid); position: sticky; top: 0; background: var(--card); }
+  .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; color: var(--ink-2); }
+  .tbl tr:hover td { background: var(--track); }
+  .tbl td.orig { max-width: 260px; } .tbl td.trans { max-width: 260px; color: var(--ink); }
+  .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+  .chip.positive { background: var(--mint); color: var(--mint-ink); }
+  .chip.neutral  { background: var(--track); color: var(--ink-2); }
+  .chip.negative { background: var(--rose); color: var(--rose-ink); }
+  .tblwrap { max-height: 430px; overflow: auto; border: 1px solid var(--grid); border-radius: 14px; }
+  .empty { color: var(--muted); font-size: 12.5px; padding: 24px 0; text-align: center; }
+</style>
+
+<div class="viz-root">
+  <div class="hdr">
+    <h1>Dabur International · Social Listening</h1>
+    <span class="badge" id="snapshot-badge"></span>
+  </div>
+  <div class="sub" id="subtitle"></div>
+
+  <div class="filters">
+    <select id="f-range">
+      <option value="all">All time</option>
+      <option value="7">Last 7 days</option>
+      <option value="30">Last 30 days</option>
+      <option value="90">Last 90 days</option>
+    </select>
+    <select id="f-platform"><option value="">All platforms</option></select>
+    <select id="f-entity">
+      <option value="">Own + competitors</option>
+      <option value="own">Own brands</option>
+      <option value="competitor">Competitors</option>
+    </select>
+    <select id="f-market"><option value="">All markets</option></select>
+    <select id="f-sentiment">
+      <option value="">All sentiment</option>
+      <option value="positive">Positive</option>
+      <option value="neutral">Neutral</option>
+      <option value="negative">Negative</option>
+    </select>
+    <select id="f-tag"><option value="">All tags</option></select>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <div class="card wide">
+      <h3>Tracked inputs — hashtags, keywords &amp; post URLs <span style="text-transform:none;letter-spacing:0;font-weight:500">(click to filter)</span></h3>
+      <div class="chips" id="c-inputs"></div>
+    </div>
+    <div class="card wide">
+      <h3>Sentiment over time</h3>
+      <div class="legend" id="lg-line"></div>
+      <div id="c-line"></div>
+    </div>
+    <div class="card"><h3>Sentiment split</h3><div id="c-donut"></div></div>
+    <div class="card"><h3>Sentiment by platform</h3><div class="legend" id="lg-plat"></div><div id="c-platform"></div></div>
+    <div class="card"><h3>Intent breakdown</h3><div id="c-intent"></div></div>
+    <div class="card"><h3>Share of voice — brand mentions</h3><div class="legend" id="lg-sov"></div><div id="c-sov"></div></div>
+    <div class="card"><h3>Themes, colored by sentiment</h3><div id="c-themes"></div></div>
+    <div class="card"><h3>Mentions by market</h3><div id="c-markets"></div></div>
+    <div class="card"><h3>Detected languages</h3><div id="c-langs"></div></div>
+    <div class="card wide">
+      <h3>Comments <span style="text-transform:none;letter-spacing:0;font-weight:500">(first 300 of filtered)</span></h3>
+      <input id="f-search" placeholder="Search text or translation…" style="width:280px;margin-bottom:12px;cursor:text">
+      <div class="tblwrap"><table class="tbl" id="c-table"></table></div>
+    </div>
+  </div>
+</div>
+<div id="tip"></div>
+
+<script>
+window.DATA = /*__DATA__*/[];
+window.META = /*__META__*/{};
+
+(function () {
+  "use strict";
+  const DATA = window.DATA, META = window.META;
+  const $ = (s) => document.querySelector(s);
+  const fmt = (n) => Number(n).toLocaleString();
+  const SENT = ["positive", "neutral", "negative"];
+  const SENT_VAR = { positive: "var(--pos)", neutral: "var(--neu)", negative: "var(--neg)" };
+  const tip = $("#tip");
+  let selectedSource = null;
+
+  $("#snapshot-badge").textContent = (META.sample ? "sample data · " : "") + "snapshot " + (META.generated || "");
+  $("#subtitle").textContent = fmt(DATA.length) + " classified comments · generated by the dabur-listen pipeline (python -m dabur_listen snapshot)";
+
+  function showTip(html, x, y) {
+    tip.innerHTML = html; tip.style.display = "block";
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(x + 12, window.innerWidth - r.width - 8) + "px";
+    tip.style.top = Math.min(y + 12, window.innerHeight - r.height - 8) + "px";
+  }
+  function hideTip() { tip.style.display = "none"; }
+
+  function countBy(rows, key) {
+    const m = new Map();
+    for (const r of rows) { const k = r[key] || "unknown"; m.set(k, (m.get(k) || 0) + 1); }
+    return m;
+  }
+  function legend(el, items) {
+    el.innerHTML = items.map(([label, color]) =>
+      `<span><i style="background:${color}"></i>${label}</span>`).join("");
+  }
+  function fill(sel, values) {
+    for (const v of [...new Set(values)].sort()) {
+      if (!v) continue;
+      const o = document.createElement("option"); o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    }
+  }
+  fill($("#f-platform"), DATA.map((r) => r.platform));
+  fill($("#f-market"), DATA.map((r) => r.market).filter((m) => m && m !== "unknown"));
+  fill($("#f-tag"), DATA.map((r) => r.tag));
+
+  function filtered() {
+    const range = $("#f-range").value, plat = $("#f-platform").value,
+      ent = $("#f-entity").value, mkt = $("#f-market").value,
+      sent = $("#f-sentiment").value, tag = $("#f-tag").value;
+    let minDay = null;
+    if (range !== "all" && META.max_day) {
+      const d = new Date(META.max_day); d.setDate(d.getDate() - parseInt(range, 10));
+      minDay = d.toISOString().slice(0, 10);
+    }
+    return DATA.filter((r) =>
+      (!minDay || r.day >= minDay) &&
+      (!plat || r.platform === plat) &&
+      (!ent || r.entity === ent || (ent && r.entity === "both")) &&
+      (!mkt || r.market === mkt) &&
+      (!sent || r.sentiment === sent) &&
+      (!tag || r.tag === tag) &&
+      (!selectedSource || r.source === selectedSource));
+  }
+
+  // ── tracked inputs (the URLs / keywords / hashtags being monitored) ───────
+  function renderInputs() {
+    const el = $("#c-inputs");
+    const m = new Map();
+    for (const r of DATA) {
+      if (!r.source) continue;
+      const k = r.source_type + "\u0000" + r.source;
+      m.set(k, (m.get(k) || 0) + 1);
+    }
+    const kws = [], urls = [];
+    for (const [k, n] of m) {
+      const [t, v] = k.split("\u0000");
+      (t === "url" ? urls : kws).push([v, n]);
+    }
+    kws.sort((a, b) => b[1] - a[1]); urls.sort((a, b) => b[1] - a[1]);
+    const chip = (v, n, cls) => {
+      const on = selectedSource === v ? " on" : "";
+      const label = cls === "url" ? v.replace(/^https?:\/\/(www\.)?/, "") : v;
+      return `<span class="srcchip ${cls}${on}" data-src="${v.replace(/"/g, "&quot;")}"
+               title="${v}"><span class="t">${label}</span><b>${fmt(n)}</b></span>`;
+    };
+    let html = "";
+    if (kws.length) html += `<span class="chipgroup">Keywords &amp; hashtags</span>` +
+      kws.map(([v, n]) => chip(v, n, "kw")).join("");
+    if (urls.length) html += `<span class="chipgroup">Post URLs</span>` +
+      urls.map(([v, n]) => chip(v, n, "url")).join("");
+    el.innerHTML = html || '<div class="empty">No sources recorded</div>';
+    el.querySelectorAll(".srcchip").forEach((c) => c.addEventListener("click", () => {
+      selectedSource = selectedSource === c.dataset.src ? null : c.dataset.src;
+      renderAll();
+    }));
+  }
+
+  function renderKpis(rows) {
+    const n = rows.length || 1;
+    const pos = rows.filter((r) => r.sentiment === "positive").length;
+    const neg = rows.filter((r) => r.sentiment === "negative").length;
+    const buy = rows.filter((r) => r.intent === "purchase_intent").length;
+    const net = Math.round((100 * (pos - neg)) / n);
+    $("#kpis").innerHTML = `
+      <div class="kpi sky"><div class="lbl">Mentions analyzed</div><div class="val">${fmt(rows.length)}</div></div>
+      <div class="kpi mint"><div class="lbl">Positive</div><div class="val">${Math.round((100 * pos) / n)}%</div></div>
+      <div class="kpi rose"><div class="lbl">Negative</div><div class="val">${Math.round((100 * neg) / n)}%</div></div>
+      <div class="kpi lav"><div class="lbl">Net sentiment</div><div class="val">${net > 0 ? "+" : ""}${net} pts</div></div>
+      <div class="kpi peach"><div class="lbl">Purchase intent</div><div class="val">${fmt(buy)}</div></div>`;
+  }
+
+  // rows: [{label, segs: [{key, val, color}]}] — pill bars on a shared track
+  function hStacked(container, rows, tipFor) {
+    const el = $(container); el.innerHTML = "";
+    if (!rows.length) { el.innerHTML = '<div class="empty">No data in this filter</div>'; return; }
+    const max = Math.max(...rows.map((r) => r.segs.reduce((a, s) => a + s.val, 0)));
+    for (const row of rows) {
+      const total = row.segs.reduce((a, s) => a + s.val, 0);
+      const d = document.createElement("div"); d.className = "hrow";
+      const track = row.segs.filter((s) => s.val > 0).map((s) =>
+        `<div class="seg" style="background:${s.color};flex:0 0 ${(100 * s.val) / max}%"
+              data-tip="${(tipFor || ((r, sg) => `${r.label} · ${sg.key}: <b>${fmt(sg.val)}</b>`))(row, s).replace(/"/g, "&quot;")}"></div>`).join("");
+      d.innerHTML = `<div class="rl" title="${row.label}">${row.label}</div>
+                     <div class="track">${track}</div><div class="rv">${fmt(total)}</div>`;
+      el.appendChild(d);
+    }
+    el.querySelectorAll(".seg").forEach((s) => {
+      s.addEventListener("mousemove", (e) => showTip(s.dataset.tip, e.clientX, e.clientY));
+      s.addEventListener("mouseleave", hideTip);
+    });
+  }
+
+  function sentimentSegs(map) {
+    return SENT.map((s) => ({ key: s, val: map.get(s) || 0, color: SENT_VAR[s] }));
+  }
+
+  function lineChart(container, days, series) {
+    const el = $(container); el.innerHTML = "";
+    if (!days.length) { el.innerHTML = '<div class="empty">No data in this filter</div>'; return; }
+    const W = Math.max(el.clientWidth || 600, 320), H = 230;
+    const m = { l: 34, r: 10, t: 8, b: 22 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const maxY = Math.max(1, ...series.flatMap((s) => s.values));
+    const x = (i) => m.l + (days.length === 1 ? iw / 2 : (i * iw) / (days.length - 1));
+    const y = (v) => m.t + ih - (v / maxY) * ih;
+    let g = "";
+    for (let t = 0; t <= 4; t++) {
+      const v = (maxY * t) / 4, yy = y(v);
+      g += `<line x1="${m.l}" y1="${yy}" x2="${W - m.r}" y2="${yy}" stroke="var(--grid)" stroke-width="1"/>
+            <text x="${m.l - 6}" y="${yy + 3}" text-anchor="end">${Math.round(v)}</text>`;
+    }
+    const step = Math.max(1, Math.ceil(days.length / 6));
+    for (let i = 0; i < days.length; i += step) {
+      g += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle">${days[i].slice(5)}</text>`;
+    }
+    for (const s of series) {
+      const pts = s.values.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+      g += `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.25"
+             stroke-linejoin="round" stroke-linecap="round"/>`;
+    }
+    g += `<line id="xh" x1="0" y1="${m.t}" x2="0" y2="${m.t + ih}" stroke="var(--baseline)" stroke-width="1" visibility="hidden"/>`;
+    el.innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" style="display:block">${g}
+      <rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" id="ov"/></svg>`;
+    const svg = el.querySelector("svg"), ov = el.querySelector("#ov"), xh = el.querySelector("#xh");
+    ov.addEventListener("mousemove", (e) => {
+      const r = svg.getBoundingClientRect();
+      const px = ((e.clientX - r.left) / r.width) * W;
+      const i = Math.max(0, Math.min(days.length - 1,
+        Math.round(((px - m.l) / iw) * (days.length - 1))));
+      xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
+      showTip(`<b>${days[i]}</b><br>` + series.map((s) =>
+        `<span style="color:${s.color}">●</span> ${s.name}: <b>${s.values[i]}</b>`).join("<br>"),
+        e.clientX, e.clientY);
+    });
+    ov.addEventListener("mouseleave", () => { xh.setAttribute("visibility", "hidden"); hideTip(); });
+  }
+
+  function donut(container, items) {
+    const el = $(container); el.innerHTML = "";
+    const total = items.reduce((a, i) => a + i.value, 0);
+    if (!total) { el.innerHTML = '<div class="empty">No data in this filter</div>'; return; }
+    const R = 72, C = 100, SW = 30, circ = 2 * Math.PI * R;
+    let off = 0, segs = "";
+    for (const it of items) {
+      if (!it.value) continue;
+      const frac = it.value / total;
+      const len = Math.max(0, frac * circ - 3);
+      segs += `<circle r="${R}" cx="${C}" cy="${C}" fill="none" stroke="${it.color}"
+        stroke-width="${SW}" stroke-linecap="round" stroke-dasharray="${len} ${circ - len}"
+        stroke-dashoffset="${-off * circ}" transform="rotate(-90 ${C} ${C})"
+        data-tip="${it.label}: <b>${fmt(it.value)}</b> (${Math.round(100 * frac)}%)"></circle>`;
+      off += frac;
+    }
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <svg width="164" height="164" viewBox="0 0 200 200">${segs}
+        <text x="${C}" y="${C - 2}" text-anchor="middle" style="font-size:26px;font-weight:700;fill:var(--ink)">${fmt(total)}</text>
+        <text x="${C}" y="${C + 17}" text-anchor="middle">mentions</text></svg>
+      <div class="legend" style="flex-direction:column;align-items:flex-start;gap:8px">
+        ${items.map((i) => `<span><i style="background:${i.color}"></i>${i.label}
+          <b style="color:var(--ink)">${fmt(i.value)}</b></span>`).join("")}</div></div>`;
+    el.querySelectorAll("circle[data-tip]").forEach((c) => {
+      c.addEventListener("mousemove", (e) => showTip(c.dataset.tip, e.clientX, e.clientY));
+      c.addEventListener("mouseleave", hideTip);
+    });
+  }
+
+  function esc(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function renderTable(rows) {
+    const q = ($("#f-search").value || "").toLowerCase();
+    const sub = rows.filter((r) => !q || (r.text || "").toLowerCase().includes(q) ||
+      (r.translation || "").toLowerCase().includes(q)).slice(0, 300);
+    $("#c-table").innerHTML =
+      `<tr><th>Platform</th><th>Author</th><th>Original</th><th>English</th><th>Language</th>
+       <th>Sentiment</th><th>Intent</th><th>Market</th><th>Likes</th></tr>` +
+      sub.map((r) => `<tr>
+        <td>${esc(r.platform)}</td><td>${esc(r.author)}</td>
+        <td class="orig">${esc(r.text)}</td><td class="trans">${esc(r.translation)}</td>
+        <td>${esc(r.language)}</td>
+        <td><span class="chip ${esc(r.sentiment)}">${esc(r.sentiment)}</span></td>
+        <td>${esc(r.intent)}</td><td>${esc(r.market)}</td><td>${fmt(r.likes || 0)}</td></tr>`).join("");
+  }
+
+  function renderAll() {
+    renderInputs();
+    const rows = filtered();
+    renderKpis(rows);
+
+    const days = [...new Set(rows.map((r) => r.day))].sort();
+    const byDay = {};
+    for (const s of SENT) byDay[s] = days.map(() => 0);
+    const idx = new Map(days.map((d, i) => [d, i]));
+    for (const r of rows) if (byDay[r.sentiment]) byDay[r.sentiment][idx.get(r.day)]++;
+    legend($("#lg-line"), SENT.map((s) => [s, SENT_VAR[s]]));
+    lineChart("#c-line", days, SENT.map((s) => ({ name: s, color: SENT_VAR[s], values: byDay[s] })));
+
+    const sc = countBy(rows, "sentiment");
+    donut("#c-donut", SENT.map((s) => ({ label: s, value: sc.get(s) || 0, color: SENT_VAR[s] })));
+
+    legend($("#lg-plat"), SENT.map((s) => [s, SENT_VAR[s]]));
+    const plats = [...countBy(rows, "platform").entries()].sort((a, b) => b[1] - a[1]);
+    hStacked("#c-platform", plats.map(([p]) => {
+      const m = countBy(rows.filter((r) => r.platform === p), "sentiment");
+      return { label: p, segs: sentimentSegs(m) };
+    }));
+
+    const ic = [...countBy(rows, "intent").entries()].sort((a, b) => b[1] - a[1]);
+    hStacked("#c-intent", ic.map(([k, v]) => ({ label: k, segs: [{ key: "count", val: v, color: "var(--s1)" }] })),
+      (r, s) => `${r.label}: <b>${fmt(s.val)}</b>`);
+
+    legend($("#lg-sov"), [["own brand", "var(--s1)"], ["competitor", "var(--s8)"]]);
+    const bm = new Map();
+    for (const r of rows) for (const b of r.brands || []) bm.set(b, (bm.get(b) || 0) + 1);
+    const sov = [...bm.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+    hStacked("#c-sov", sov.map(([b, n]) => ({
+      label: b,
+      segs: [{ key: "mentions", val: n, color: (META.own_brands || []).includes(b) ? "var(--s1)" : "var(--s8)" }],
+    })), (r, s) => `${r.label}: <b>${fmt(s.val)}</b> mentions`);
+
+    const tm = new Map();
+    for (const r of rows) for (const t of r.themes || []) {
+      const e = tm.get(t) || new Map();
+      e.set(r.sentiment, (e.get(r.sentiment) || 0) + 1);
+      tm.set(t, e);
+    }
+    const themes = [...tm.entries()]
+      .sort((a, b) => [...b[1].values()].reduce((x, y) => x + y, 0) - [...a[1].values()].reduce((x, y) => x + y, 0))
+      .slice(0, 12);
+    hStacked("#c-themes", themes.map(([t, m]) => ({ label: t, segs: sentimentSegs(m) })));
+
+    const mkRows = rows.filter((r) => r.market && r.market !== "unknown");
+    const mks = [...countBy(mkRows, "market").entries()].sort((a, b) => b[1] - a[1]);
+    hStacked("#c-markets", mks.map(([mk]) => {
+      const m = countBy(mkRows.filter((r) => r.market === mk), "sentiment");
+      return { label: mk, segs: sentimentSegs(m) };
+    }));
+
+    const lc = [...countBy(rows, "language").entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+    hStacked("#c-langs", lc.map(([k, v]) => ({ label: k, segs: [{ key: "count", val: v, color: "var(--s5)" }] })),
+      (r, s) => `${r.label}: <b>${fmt(s.val)}</b>`);
+
+    renderTable(rows);
+  }
+
+  ["f-range", "f-platform", "f-entity", "f-market", "f-sentiment", "f-tag"]
+    .forEach((id) => $("#" + id).addEventListener("change", renderAll));
+  $("#f-search").addEventListener("input", () => renderTable(filtered()));
+  window.addEventListener("resize", renderAll);
+  renderAll();
+})();
+</script>
