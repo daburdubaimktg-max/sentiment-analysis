@@ -200,6 +200,17 @@ def export(path):
 
 
 @cli.command()
+@click.option("--out", type=click.Path(dir_okay=False), default=None,
+              help="Output path (default data/exports/dashboard.html)")
+@click.option("--demo", is_flag=True, help="Use built-in sample data instead of the DB")
+def snapshot(out, demo):
+    """Build a self-contained HTML dashboard (shareable, no server or keys)."""
+    from .artifact import build_snapshot
+    path = build_snapshot(out, demo=demo)
+    click.echo(f"Wrote {path} — open it in a browser or share it as a Claude artifact.")
+
+
+@cli.command()
 def dashboard():
     """Launch the Streamlit dashboard."""
     app = ROOT / "dashboard" / "app.py"
