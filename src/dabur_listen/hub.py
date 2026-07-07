@@ -1,15 +1,21 @@
-"""Build the multi-brand Sentiment Hub (dashboard/hub_template.html).
+"""Build the multi-brand Listening Hub (dashboard/hub_template.html).
 
-The hub template carries the full feature set — brand switcher, JSON
-import/export, Overview / All Comments / Themes / Brand Monitor / Issue /
-Risk Flags / Video Comparison / Recommendations / Trend Radar tabs — and this
-module feeds it: every brand section is computed from the pipeline database,
-optionally overlaid with Claude-written insights (data/insights/<id>.json),
-then spliced into the template. A "Pipeline Analytics" tab is appended for
-the pipeline-only views (tracked inputs, share of voice, markets, languages).
+One seamless dashboard in the clean white/pastel design system carrying the
+full feature set: brand switcher, JSON import/export with browser persistence,
+and seven tabs — Overview (KPIs, alert, sentiment-over-time, timeline, top
+comments), Comments (filterable feed with search, flags and pagination),
+Themes & Intent, Brands & Markets (tracked inputs, share of voice, markets,
+channels), Risks & Actions (health, deltas, critical queue, advocates, risk
+register, action plan), Posts, and Trend Radar.
+
+Every brand section is computed from the pipeline database, optionally
+overlaid with Claude-written insights (data/insights/<id>.json), then spliced
+into the template. Sample brands (dashboard/sample_brands.json) share the same
+schema, so hub exports/imports round-trip.
 
     python -m dabur_listen hub            # data/exports/hub.html from the DB
     python -m dabur_listen hub --demo     # sample-data preview
+    python -m dabur_listen hub --no-samples
 """
 
 import json
@@ -250,7 +256,7 @@ def brand_from_rows(rows: list[dict], bid: str, name: str, today: str) -> dict:
             "s": {"positive": "pos", "neutral": "neu", "negative": "neg"}[r["sentiment"]],
             "vid": vid_of.get(r["post_url"], "v1"), "brand": False,
             "issue": risk_theme in r["themes"], "new": bool(r.get("new")),
-            "th": (r["themes"] or ["general"])[0],
+            "th": (r["themes"] or ["general"])[0], "d": r.get("day") or None,
         } for r in sorted(rows, key=lambda r: -r["likes"])[:500]],
         "themes": [{"name": THEME_LABEL.get(t, t), "n": c,
                     "kind": ("risk" if theme_sent[t]["negative"] > theme_sent[t]["positive"]
@@ -333,77 +339,49 @@ def _fallback_recos(negatives, buy, brand_counts, own_names):
     return recos
 
 
-def _extract_span(src: str, name: str) -> tuple[int, int]:
-    i = src.find(f"const {name} = ") + len(f"const {name} = ")
-    depth = 0
-    for j in range(i, len(src)):
-        if src[j] == "{":
-            depth += 1
-        elif src[j] == "}":
-            depth -= 1
-            if depth == 0:
-                return i, j + 1
-    raise ValueError(f"cannot find {name} object in template")
+SAMPLES_PATH = ROOT / "dashboard" / "sample_brands.json"
 
 
-EXTENSION_JS = """
-<script>
-/* ── Pipeline Analytics tab (added by dabur-listen) ───────────────────── */
-(function(){
-  const tabs=document.querySelector('.tabs'); if(!tabs) return;
-  const btn=document.createElement('button');
-  btn.className='tab'; btn.id='tab-pipeline-btn'; btn.textContent='Pipeline Analytics';
-  btn.onclick=()=>showTab('tab-pipeline',btn); tabs.appendChild(btn);
-  const ref=document.getElementById('tab-trend');
-  const sec=document.createElement('section');
-  sec.className='section'; sec.id='tab-pipeline';
-  ref.parentElement.insertBefore(sec,ref.nextSibling);
-  const esc2=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  function bars(items,color){
-    if(!items||!items.length) return '<div style="color:var(--muted);font-size:12px">No data</div>';
-    const max=Math.max(...items.map(i=>i.n));
-    return items.map(i=>`
-      <div style="display:grid;grid-template-columns:150px 1fr 40px;gap:8px;align-items:center;margin:6px 0;font-size:12.5px">
-        <div style="text-align:right;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc2(i.label)}">${esc2(i.label)}</div>
-        <div style="background:var(--line);border-radius:99px;height:12px;overflow:hidden">
-          <div style="width:${100*i.n/max}%;height:100%;border-radius:99px;background:${i.color||color}"></div></div>
-        <div style="font-weight:600">${i.n}</div></div>`).join('');
-  }
-  function renderPipeline(){
-    const b=DATA.brands[state.active];
-    if(!b||!b.pipeline){
-      sec.innerHTML='<h1 class="h1">Pipeline Analytics</h1><div class="card" style="padding:18px">'+
-        'This tab shows tracked inputs, share of voice, markets and languages for brands scraped '+
-        'by the dabur-listen pipeline. The current brand was imported manually, so pipeline data '+
-        'is not available for it.</div>';
-      return;
-    }
-    const p=b.pipeline;
-    const chips=p.inputs.map(i=>`<span style="display:inline-flex;gap:6px;align-items:center;margin:3px;padding:5px 12px;border-radius:99px;font-size:12px;background:${i.type==='url'?'var(--goldBg)':'var(--greenBg)'};color:var(--ink)">${esc2(i.type==='url'?i.value.replace(/^https?:\\/\\/(www\\.)?/,''):i.value)} <b>${i.n}</b></span>`).join('');
-    sec.innerHTML=`<h1 class="h1">Pipeline Analytics — Inputs & Reach</h1>
-      <div class="card" style="padding:16px;margin-bottom:14px"><div class="card-h">Tracked inputs — hashtags, keywords & post URLs</div>${chips||'<i>none recorded</i>'}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px">
-        <div class="card" style="padding:16px"><div class="card-h">Share of voice — brand mentions</div>
-          ${bars(p.sov.map(s=>({label:s.brand,n:s.n,color:s.own?'var(--primary)':'var(--gold)'})),'var(--primary)')}</div>
-        <div class="card" style="padding:16px"><div class="card-h">Mentions by market</div>
-          ${bars(p.markets.map(m=>({label:m.name,n:m.n})),'var(--green)')}</div>
-        <div class="card" style="padding:16px"><div class="card-h">Detected languages</div>
-          ${bars(p.langs.map(l=>({label:l.name,n:l.n})),'var(--purple)')}</div>
-      </div>`;
-  }
-  const orig=renderAll;
-  renderAll=function(){orig();renderPipeline();};
-  renderPipeline();
-})();
-</script>
-"""
+def _convert_trend(t: dict) -> dict:
+    """Normalize any trend JSON to the template's shape (verdict/snapshot/what/sections)."""
+    known = {"verdict", "vsub", "name", "for", "snapshot", "what"}
+    out = {k: t[k] for k in known if k in t}
+    sections = list(t.get("sections", []))
+    for k, v in t.items():
+        if k in known or k == "sections":
+            continue
+        title = k.replace("_", " ").title()
+        if isinstance(v, str):
+            sections.append({"title": title, "body": v})
+        elif isinstance(v, list):
+            lines = []
+            for item in v:
+                if isinstance(item, dict):
+                    vals = [str(x) for x in item.values() if isinstance(x, (str, int, float))]
+                    lines.append("• " + " — ".join(vals[:3]))
+                else:
+                    lines.append("• " + str(item))
+            if lines:
+                sections.append({"title": title, "body": "\n".join(lines)})
+    out["sections"] = sections
+    return out
+
+
+def _load_samples() -> tuple[dict, dict | None]:
+    if not SAMPLES_PATH.exists():
+        return {"order": [], "brands": {}}, None
+    data = json.loads(SAMPLES_PATH.read_text(encoding="utf-8"))
+    brands = data.get("brands", {})
+    for b in brands.values():
+        if "sample" not in b["meta"]["name"].lower():
+            b["meta"]["name"] += " · sample"
+    trend = _convert_trend(data["trend"]) if data.get("trend") else None
+    return {"order": data.get("order", []), "brands": brands}, trend
 
 
 def build_hub(out_path: Path | None = None, demo: bool = False,
               include_samples: bool = True) -> Path:
     template = TEMPLATE_PATH.read_text(encoding="utf-8")
-    i0, i1 = _extract_span(template, "DATA")
-    data = json.loads(template[i0:i1])
     today = date.today().isoformat()
 
     if demo:
@@ -428,22 +406,28 @@ def build_hub(out_path: Path | None = None, demo: bool = False,
                 bid = re.sub(r"[^a-z0-9]+", "_", tag.lower()).strip("_") or "untagged"
                 brands[bid] = brand_from_rows(tag_rows, bid, tag.title(), today)
 
+    data = {"order": list(brands.keys()), "brands": brands}
+    trend = None
     if include_samples:
-        data["brands"].update(brands)
-        data["order"] = list(brands.keys()) + [b for b in data["order"] if b not in brands]
-    else:
-        data = {"order": list(brands.keys()), "brands": brands}
+        samples, sample_trend = _load_samples()
+        data["brands"].update(samples["brands"])
+        data["order"] += [b for b in samples["order"] if b not in data["order"]]
+        trend = sample_trend
     if not data["order"]:
         raise RuntimeError("No classified data and samples disabled — nothing to build.")
 
-    html = template[:i0] + json.dumps(data, ensure_ascii=False) + template[i1:]
-
     trend_file = INSIGHTS_DIR / "trend.json"
     if trend_file.exists():
-        j0, j1 = _extract_span(html, "TREND")
-        html = html[:j0] + trend_file.read_text(encoding="utf-8") + html[j1:]
+        try:
+            trend = _convert_trend(json.loads(trend_file.read_text(encoding="utf-8")))
+        except Exception:
+            pass
 
-    html = html.replace("</body></html>", EXTENSION_JS + "\n</body></html>")
+    meta = {"generated": today, "sample": demo}
+    html = (template
+            .replace('/*__DATA__*/{"order":[],"brands":{}}', json.dumps(data, ensure_ascii=False))
+            .replace("/*__TREND__*/null", json.dumps(trend, ensure_ascii=False))
+            .replace("/*__META__*/{}", json.dumps(meta, ensure_ascii=False)))
 
     if out_path is None:
         out_path = DATA_DIR / "exports" / "hub.html"
