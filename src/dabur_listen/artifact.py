@@ -25,9 +25,9 @@ def _rows_from_db() -> list[dict]:
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row
     rows = con.execute(
-        """SELECT platform, tracking_tag, author, text, translation, detected_language,
-                  sentiment, intent, themes, topics, brand_mentions, entity, market,
-                  likes, posted_at, scraped_at
+        """SELECT platform, source_type, source_value, tracking_tag, author, text,
+                  translation, detected_language, sentiment, intent, themes, topics,
+                  brand_mentions, entity, market, likes, posted_at, scraped_at
            FROM comments WHERE sentiment IS NOT NULL"""
     ).fetchall()
     con.close()
@@ -36,6 +36,8 @@ def _rows_from_db() -> list[dict]:
         day = (r["posted_at"] or r["scraped_at"] or "")[:10]
         out.append({
             "platform": r["platform"],
+            "source_type": r["source_type"],
+            "source": r["source_value"],
             "tag": r["tracking_tag"],
             "author": r["author"],
             "text": r["text"],
@@ -87,13 +89,23 @@ def _demo_rows(n: int = 160) -> list[dict]:
     platforms = ["tiktok", "instagram", "youtube", "facebook", "x"]
     markets = ["UAE", "KSA", "EGY", "NGA", "KEN", "UZB", "KAZ", "MAR", "unknown"]
     tags = ["amla-summer-push", "vatika-ksa-campaign", "competitor-watch", None]
+    sources = [
+        ("keyword", "#daburamla"), ("keyword", "#vatika"), ("keyword", "#hairoil"),
+        ("keyword", "vatika hair oil"), ("keyword", "dermoviva soap"),
+        ("url", "https://www.tiktok.com/@beautyksa/video/7312"),
+        ("url", "https://www.instagram.com/p/C8xQ2vA/"),
+        ("url", "https://www.youtube.com/watch?v=amla2026"),
+    ]
     rows = []
     for i in range(n):
         text, trans, lang, sent, intent, themes = samples[rng.randrange(len(samples))]
         is_comp = rng.random() < 0.25
         brand = rng.choice(comp if is_comp else own)
+        stype, sval = sources[rng.randrange(len(sources))]
         rows.append({
             "platform": rng.choice(platforms),
+            "source_type": stype,
+            "source": sval,
             "tag": rng.choice(tags),
             "author": f"user_{rng.randrange(1000, 9999)}",
             "text": text,

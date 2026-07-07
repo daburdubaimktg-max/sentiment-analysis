@@ -1,89 +1,130 @@
 <title>Dabur Social Listening</title>
 <style>
   .viz-root {
-    --surface-1: #fcfcfb; --page: #f9f9f7;
-    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
-    --grid: #e1e0d9; --baseline: #c3c2b7; --ring: rgba(11,11,11,0.10);
-    --pos: #1baf7a; --neu: #898781; --neg: #e34948;
-    --s1: #2a78d6; --s2: #1baf7a; --s3: #eda100; --s4: #008300;
-    --s5: #4a3aa7; --s6: #e34948; --s7: #e87ba4; --s8: #eb6834;
+    /* ── clean white / pastel theme ── */
+    --page: #ffffff; --card: #ffffff; --card-brd: #edf0f5;
+    --shadow: 0 1px 2px rgba(28,36,52,.04), 0 10px 30px rgba(28,36,52,.05);
+    --ink: #1c2434; --ink-2: #55617a; --muted: #949db0;
+    --grid: #f0f2f7; --baseline: #dfe3ec; --track: #f3f5f9;
+    --mint: #e6f7ef; --rose: #fdeaea; --lav: #edeafb; --peach: #fff1e3; --sky: #e8f1fd;
+    --mint-ink: #0e7a52; --rose-ink: #b23a3a; --lav-ink: #5b4bc4; --peach-ink: #b06018; --sky-ink: #1d5fb8;
+    --pos: #1baf7a; --neu: #a3abbd; --neg: #e35d5d;
+    --s1: #5b93e0; --s5: #8f83dd; --s8: #f0925f;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     color: var(--ink); background: var(--page);
-    padding: 20px; min-height: 100vh; box-sizing: border-box;
+    padding: 26px clamp(14px, 3vw, 40px); min-height: 100vh; box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
   }
   @media (prefers-color-scheme: dark) {
     .viz-root {
-      --surface-1: #1a1a19; --page: #0d0d0d;
-      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
-      --grid: #2c2c2a; --baseline: #383835; --ring: rgba(255,255,255,0.10);
-      --pos: #199e70; --neu: #898781; --neg: #e66767;
-      --s1: #3987e5; --s2: #199e70; --s3: #c98500; --s4: #008300;
-      --s5: #9085e9; --s6: #e66767; --s7: #d55181; --s8: #d95926;
+      --page: #101319; --card: #171b23; --card-brd: #242a36;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.25);
+      --ink: #f2f4f8; --ink-2: #b8c0d0; --muted: #7e8798;
+      --grid: #232935; --baseline: #333b4a; --track: #1f2530;
+      --mint: #123527; --rose: #3a2022; --lav: #251f3f; --peach: #38281a; --sky: #16283e;
+      --mint-ink: #4fd6a4; --rose-ink: #f09a9a; --lav-ink: #b0a6f2; --peach-ink: #f0b984; --sky-ink: #85b6f2;
+      --pos: #2ec48c; --neu: #6f7889; --neg: #e97a7a;
     }
   }
   :root[data-theme="dark"] .viz-root {
-    --surface-1: #1a1a19; --page: #0d0d0d;
-    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
-    --grid: #2c2c2a; --baseline: #383835; --ring: rgba(255,255,255,0.10);
-    --pos: #199e70; --neu: #898781; --neg: #e66767;
-    --s1: #3987e5; --s2: #199e70; --s3: #c98500; --s4: #008300;
-    --s5: #9085e9; --s6: #e66767; --s7: #d55181; --s8: #d95926;
+    --page: #101319; --card: #171b23; --card-brd: #242a36;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.25);
+    --ink: #f2f4f8; --ink-2: #b8c0d0; --muted: #7e8798;
+    --grid: #232935; --baseline: #333b4a; --track: #1f2530;
+    --mint: #123527; --rose: #3a2022; --lav: #251f3f; --peach: #38281a; --sky: #16283e;
+    --mint-ink: #4fd6a4; --rose-ink: #f09a9a; --lav-ink: #b0a6f2; --peach-ink: #f0b984; --sky-ink: #85b6f2;
+    --pos: #2ec48c; --neu: #6f7889; --neg: #e97a7a;
   }
   :root[data-theme="light"] .viz-root {
-    --surface-1: #fcfcfb; --page: #f9f9f7;
-    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
-    --grid: #e1e0d9; --baseline: #c3c2b7; --ring: rgba(11,11,11,0.10);
-    --pos: #1baf7a; --neu: #898781; --neg: #e34948;
-    --s1: #2a78d6; --s2: #1baf7a; --s3: #eda100; --s4: #008300;
-    --s5: #4a3aa7; --s6: #e34948; --s7: #e87ba4; --s8: #eb6834;
+    --page: #ffffff; --card: #ffffff; --card-brd: #edf0f5;
+    --shadow: 0 1px 2px rgba(28,36,52,.04), 0 10px 30px rgba(28,36,52,.05);
+    --ink: #1c2434; --ink-2: #55617a; --muted: #949db0;
+    --grid: #f0f2f7; --baseline: #dfe3ec; --track: #f3f5f9;
+    --mint: #e6f7ef; --rose: #fdeaea; --lav: #edeafb; --peach: #fff1e3; --sky: #e8f1fd;
+    --mint-ink: #0e7a52; --rose-ink: #b23a3a; --lav-ink: #5b4bc4; --peach-ink: #b06018; --sky-ink: #1d5fb8;
+    --pos: #1baf7a; --neu: #a3abbd; --neg: #e35d5d;
   }
   .viz-root * { box-sizing: border-box; }
-  .hdr { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 4px; }
-  .hdr h1 { font-size: 20px; margin: 0; font-weight: 650; }
-  .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--ring);
-           color: var(--ink-2); background: var(--surface-1); }
-  .sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .filters select, .filters input {
-    background: var(--surface-1); color: var(--ink); border: 1px solid var(--ring);
-    border-radius: 8px; padding: 6px 10px; font-size: 12.5px; font-family: inherit;
+
+  .hdr { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .hdr h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -0.02em; }
+  .badge { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 999px;
+           background: var(--lav); color: var(--lav-ink); letter-spacing: .04em; }
+  .sub { color: var(--muted); font-size: 12.5px; margin: 6px 0 20px; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .filters select, .filters input, #f-search {
+    appearance: none; background: var(--card); color: var(--ink-2);
+    border: 1px solid var(--card-brd); border-radius: 999px; padding: 8px 16px;
+    font-size: 12.5px; font-family: inherit; box-shadow: var(--shadow); cursor: pointer;
   }
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
-  .kpi { background: var(--surface-1); border: 1px solid var(--ring); border-radius: 12px; padding: 12px 14px; }
-  .kpi .lbl { font-size: 11.5px; color: var(--muted); margin-bottom: 4px; }
-  .kpi .val { font-size: 26px; font-weight: 650; line-height: 1.1; }
-  .kpi .val.pos { color: var(--pos); } .kpi .val.neg { color: var(--neg); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px; }
-  .card { background: var(--surface-1); border: 1px solid var(--ring); border-radius: 12px; padding: 14px; min-width: 0; }
-  .card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .filters select:focus, #f-search:focus { outline: 2px solid var(--sky-ink); outline-offset: 1px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .kpi { border-radius: 18px; padding: 16px 18px; }
+  .kpi .lbl { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 6px; opacity: .75; }
+  .kpi .val { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+  .kpi.mint  { background: var(--mint);  color: var(--mint-ink); }
+  .kpi.rose  { background: var(--rose);  color: var(--rose-ink); }
+  .kpi.lav   { background: var(--lav);   color: var(--lav-ink); }
+  .kpi.peach { background: var(--peach); color: var(--peach-ink); }
+  .kpi.sky   { background: var(--sky);   color: var(--sky-ink); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--card-brd); border-radius: 18px;
+          padding: 18px 20px; min-width: 0; box-shadow: var(--shadow); }
+  .card h3 { margin: 0 0 14px; font-size: 11px; font-weight: 650; letter-spacing: .09em;
+             text-transform: uppercase; color: var(--muted); }
   .card.wide { grid-column: 1 / -1; }
-  .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 11.5px; color: var(--ink-2); margin-bottom: 8px; }
-  .legend span { display: inline-flex; align-items: center; gap: 5px; }
-  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-  /* horizontal stacked bars (div-based) */
-  .hrow { display: grid; grid-template-columns: 130px 1fr 44px; align-items: center; gap: 8px; margin: 5px 0; font-size: 12px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11.5px; color: var(--ink-2); margin-bottom: 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 9px; height: 9px; border-radius: 999px; display: inline-block; }
+
+  /* pill bars on a pale track */
+  .hrow { display: grid; grid-template-columns: 130px 1fr 46px; align-items: center; gap: 10px; margin: 7px 0; font-size: 12.5px; }
   .hrow .rl { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right; }
-  .hrow .rv { color: var(--muted); font-variant-numeric: tabular-nums; }
-  .track { display: flex; gap: 2px; height: 16px; }
-  .seg { border-radius: 4px; min-width: 3px; cursor: default; }
-  .seg:hover { outline: 2px solid var(--surface-1); outline-offset: -1px; filter: brightness(1.08); }
+  .hrow .rv { color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .track { display: flex; gap: 2px; height: 12px; background: var(--track); border-radius: 999px; overflow: hidden; }
+  .seg { min-width: 3px; cursor: default; transition: filter .15s; }
+  .seg:hover { filter: brightness(1.12); }
+
+  /* tracked inputs chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chipgroup { font-size: 11px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase;
+               color: var(--muted); width: 100%; margin: 8px 0 2px; }
+  .srcchip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px;
+             font-size: 12.5px; cursor: pointer; border: 1px solid transparent; max-width: 320px; }
+  .srcchip .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .srcchip b { font-variant-numeric: tabular-nums; font-weight: 650; }
+  .srcchip.kw  { background: var(--sky);  color: var(--sky-ink); }
+  .srcchip.url { background: var(--peach); color: var(--peach-ink); }
+  .srcchip.on  { border-color: currentColor; }
+  .srcchip:hover { filter: brightness(.97); }
+
   svg text { fill: var(--muted); font-size: 10.5px; font-family: inherit; }
-  #tip { position: fixed; pointer-events: none; z-index: 50; background: var(--surface-1);
-         border: 1px solid var(--ring); border-radius: 8px; padding: 7px 10px; font-size: 12px;
-         color: var(--ink); box-shadow: 0 4px 14px rgba(0,0,0,.18); display: none; max-width: 300px; }
-  table.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .tbl th { text-align: left; color: var(--muted); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--grid);
-            position: sticky; top: 0; background: var(--surface-1); }
-  .tbl td { padding: 6px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; color: var(--ink-2); }
+  #tip { position: fixed; pointer-events: none; z-index: 50; background: var(--card);
+         border: 1px solid var(--card-brd); border-radius: 12px; padding: 8px 12px; font-size: 12px;
+         color: var(--ink); box-shadow: 0 8px 26px rgba(28,36,52,.14); display: none; max-width: 300px; }
+
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: 10.5px;
+            letter-spacing: .07em; text-transform: uppercase; padding: 8px 10px;
+            border-bottom: 1px solid var(--grid); position: sticky; top: 0; background: var(--card); }
+  .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; color: var(--ink-2); }
+  .tbl tr:hover td { background: var(--track); }
   .tbl td.orig { max-width: 260px; } .tbl td.trans { max-width: 260px; color: var(--ink); }
-  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; color: #fff; }
-  .tblwrap { max-height: 420px; overflow: auto; border: 1px solid var(--grid); border-radius: 8px; }
-  .empty { color: var(--muted); font-size: 12.5px; padding: 20px 0; text-align: center; }
+  .chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+  .chip.positive { background: var(--mint); color: var(--mint-ink); }
+  .chip.neutral  { background: var(--track); color: var(--ink-2); }
+  .chip.negative { background: var(--rose); color: var(--rose-ink); }
+  .tblwrap { max-height: 430px; overflow: auto; border: 1px solid var(--grid); border-radius: 14px; }
+  .empty { color: var(--muted); font-size: 12.5px; padding: 24px 0; text-align: center; }
 </style>
 
 <div class="viz-root">
   <div class="hdr">
-    <h1>📡 Dabur International — Social Listening</h1>
+    <h1>Dabur International · Social Listening</h1>
     <span class="badge" id="snapshot-badge"></span>
   </div>
   <div class="sub" id="subtitle"></div>
@@ -115,6 +156,10 @@
 
   <div class="grid">
     <div class="card wide">
+      <h3>Tracked inputs — hashtags, keywords &amp; post URLs <span style="text-transform:none;letter-spacing:0;font-weight:500">(click to filter)</span></h3>
+      <div class="chips" id="c-inputs"></div>
+    </div>
+    <div class="card wide">
       <h3>Sentiment over time</h3>
       <div class="legend" id="lg-line"></div>
       <div id="c-line"></div>
@@ -123,13 +168,12 @@
     <div class="card"><h3>Sentiment by platform</h3><div class="legend" id="lg-plat"></div><div id="c-platform"></div></div>
     <div class="card"><h3>Intent breakdown</h3><div id="c-intent"></div></div>
     <div class="card"><h3>Share of voice — brand mentions</h3><div class="legend" id="lg-sov"></div><div id="c-sov"></div></div>
-    <div class="card"><h3>Themes (colored by sentiment)</h3><div id="c-themes"></div></div>
+    <div class="card"><h3>Themes, colored by sentiment</h3><div id="c-themes"></div></div>
     <div class="card"><h3>Mentions by market</h3><div id="c-markets"></div></div>
     <div class="card"><h3>Detected languages</h3><div id="c-langs"></div></div>
     <div class="card wide">
-      <h3>Comments <span style="font-weight:400;color:var(--muted)">(first 300 of filtered)</span></h3>
-      <input id="f-search" placeholder="Search text or translation…" style="width:260px;margin-bottom:8px;
-             background:var(--surface-1);color:var(--ink);border:1px solid var(--ring);border-radius:8px;padding:6px 10px;font-size:12.5px;">
+      <h3>Comments <span style="text-transform:none;letter-spacing:0;font-weight:500">(first 300 of filtered)</span></h3>
+      <input id="f-search" placeholder="Search text or translation…" style="width:280px;margin-bottom:12px;cursor:text">
       <div class="tblwrap"><table class="tbl" id="c-table"></table></div>
     </div>
   </div>
@@ -148,8 +192,9 @@ window.META = /*__META__*/{};
   const SENT = ["positive", "neutral", "negative"];
   const SENT_VAR = { positive: "var(--pos)", neutral: "var(--neu)", negative: "var(--neg)" };
   const tip = $("#tip");
+  let selectedSource = null;
 
-  $("#snapshot-badge").textContent = (META.sample ? "SAMPLE DATA · " : "") + "snapshot " + (META.generated || "");
+  $("#snapshot-badge").textContent = (META.sample ? "sample data · " : "") + "snapshot " + (META.generated || "");
   $("#subtitle").textContent = fmt(DATA.length) + " classified comments · generated by the dabur-listen pipeline (python -m dabur_listen snapshot)";
 
   function showTip(html, x, y) {
@@ -169,8 +214,6 @@ window.META = /*__META__*/{};
     el.innerHTML = items.map(([label, color]) =>
       `<span><i style="background:${color}"></i>${label}</span>`).join("");
   }
-
-  // ── populate filter options ────────────────────────────────────────────────
   function fill(sel, values) {
     for (const v of [...new Set(values)].sort()) {
       if (!v) continue;
@@ -194,13 +237,46 @@ window.META = /*__META__*/{};
     return DATA.filter((r) =>
       (!minDay || r.day >= minDay) &&
       (!plat || r.platform === plat) &&
-      (!ent || r.entity === ent || (ent === "own" && r.entity === "both") || (ent === "competitor" && r.entity === "both")) &&
+      (!ent || r.entity === ent || (ent && r.entity === "both")) &&
       (!mkt || r.market === mkt) &&
       (!sent || r.sentiment === sent) &&
-      (!tag || r.tag === tag));
+      (!tag || r.tag === tag) &&
+      (!selectedSource || r.source === selectedSource));
   }
 
-  // ── KPI row ────────────────────────────────────────────────────────────────
+  // ── tracked inputs (the URLs / keywords / hashtags being monitored) ───────
+  function renderInputs() {
+    const el = $("#c-inputs");
+    const m = new Map();
+    for (const r of DATA) {
+      if (!r.source) continue;
+      const k = r.source_type + "\u0000" + r.source;
+      m.set(k, (m.get(k) || 0) + 1);
+    }
+    const kws = [], urls = [];
+    for (const [k, n] of m) {
+      const [t, v] = k.split("\u0000");
+      (t === "url" ? urls : kws).push([v, n]);
+    }
+    kws.sort((a, b) => b[1] - a[1]); urls.sort((a, b) => b[1] - a[1]);
+    const chip = (v, n, cls) => {
+      const on = selectedSource === v ? " on" : "";
+      const label = cls === "url" ? v.replace(/^https?:\/\/(www\.)?/, "") : v;
+      return `<span class="srcchip ${cls}${on}" data-src="${v.replace(/"/g, "&quot;")}"
+               title="${v}"><span class="t">${label}</span><b>${fmt(n)}</b></span>`;
+    };
+    let html = "";
+    if (kws.length) html += `<span class="chipgroup">Keywords &amp; hashtags</span>` +
+      kws.map(([v, n]) => chip(v, n, "kw")).join("");
+    if (urls.length) html += `<span class="chipgroup">Post URLs</span>` +
+      urls.map(([v, n]) => chip(v, n, "url")).join("");
+    el.innerHTML = html || '<div class="empty">No sources recorded</div>';
+    el.querySelectorAll(".srcchip").forEach((c) => c.addEventListener("click", () => {
+      selectedSource = selectedSource === c.dataset.src ? null : c.dataset.src;
+      renderAll();
+    }));
+  }
+
   function renderKpis(rows) {
     const n = rows.length || 1;
     const pos = rows.filter((r) => r.sentiment === "positive").length;
@@ -208,15 +284,14 @@ window.META = /*__META__*/{};
     const buy = rows.filter((r) => r.intent === "purchase_intent").length;
     const net = Math.round((100 * (pos - neg)) / n);
     $("#kpis").innerHTML = `
-      <div class="kpi"><div class="lbl">Mentions analyzed</div><div class="val">${fmt(rows.length)}</div></div>
-      <div class="kpi"><div class="lbl">Positive</div><div class="val pos">${Math.round((100 * pos) / n)}%</div></div>
-      <div class="kpi"><div class="lbl">Negative</div><div class="val neg">${Math.round((100 * neg) / n)}%</div></div>
-      <div class="kpi"><div class="lbl">Net sentiment</div><div class="val">${net > 0 ? "+" : ""}${net} pts</div></div>
-      <div class="kpi"><div class="lbl">Purchase-intent signals</div><div class="val">${fmt(buy)}</div></div>`;
+      <div class="kpi sky"><div class="lbl">Mentions analyzed</div><div class="val">${fmt(rows.length)}</div></div>
+      <div class="kpi mint"><div class="lbl">Positive</div><div class="val">${Math.round((100 * pos) / n)}%</div></div>
+      <div class="kpi rose"><div class="lbl">Negative</div><div class="val">${Math.round((100 * neg) / n)}%</div></div>
+      <div class="kpi lav"><div class="lbl">Net sentiment</div><div class="val">${net > 0 ? "+" : ""}${net} pts</div></div>
+      <div class="kpi peach"><div class="lbl">Purchase intent</div><div class="val">${fmt(buy)}</div></div>`;
   }
 
-  // ── horizontal stacked bars (div-based) ────────────────────────────────────
-  // rows: [{label, segs: [{key, val, color}]}]
+  // rows: [{label, segs: [{key, val, color}]}] — pill bars on a shared track
   function hStacked(container, rows, tipFor) {
     const el = $(container); el.innerHTML = "";
     if (!rows.length) { el.innerHTML = '<div class="empty">No data in this filter</div>'; return; }
@@ -241,20 +316,18 @@ window.META = /*__META__*/{};
     return SENT.map((s) => ({ key: s, val: map.get(s) || 0, color: SENT_VAR[s] }));
   }
 
-  // ── line chart (SVG) ───────────────────────────────────────────────────────
   function lineChart(container, days, series) {
     const el = $(container); el.innerHTML = "";
     if (!days.length) { el.innerHTML = '<div class="empty">No data in this filter</div>'; return; }
-    const W = Math.max(el.clientWidth || 600, 320), H = 240;
+    const W = Math.max(el.clientWidth || 600, 320), H = 230;
     const m = { l: 34, r: 10, t: 8, b: 22 };
     const iw = W - m.l - m.r, ih = H - m.t - m.b;
     const maxY = Math.max(1, ...series.flatMap((s) => s.values));
     const x = (i) => m.l + (days.length === 1 ? iw / 2 : (i * iw) / (days.length - 1));
     const y = (v) => m.t + ih - (v / maxY) * ih;
     let g = "";
-    const ticks = 4;
-    for (let t = 0; t <= ticks; t++) {
-      const v = (maxY * t) / ticks, yy = y(v);
+    for (let t = 0; t <= 4; t++) {
+      const v = (maxY * t) / 4, yy = y(v);
       g += `<line x1="${m.l}" y1="${yy}" x2="${W - m.r}" y2="${yy}" stroke="var(--grid)" stroke-width="1"/>
             <text x="${m.l - 6}" y="${yy + 3}" text-anchor="end">${Math.round(v)}</text>`;
     }
@@ -264,7 +337,8 @@ window.META = /*__META__*/{};
     }
     for (const s of series) {
       const pts = s.values.map((v, i) => `${x(i)},${y(v)}`).join(" ");
-      g += `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"/>`;
+      g += `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.25"
+             stroke-linejoin="round" stroke-linecap="round"/>`;
     }
     g += `<line id="xh" x1="0" y1="${m.t}" x2="0" y2="${m.t + ih}" stroke="var(--baseline)" stroke-width="1" visibility="hidden"/>`;
     el.innerHTML = `<svg width="100%" viewBox="0 0 ${W} ${H}" style="display:block">${g}
@@ -283,28 +357,27 @@ window.META = /*__META__*/{};
     ov.addEventListener("mouseleave", () => { xh.setAttribute("visibility", "hidden"); hideTip(); });
   }
 
-  // ── donut (SVG) ────────────────────────────────────────────────────────────
   function donut(container, items) {
     const el = $(container); el.innerHTML = "";
     const total = items.reduce((a, i) => a + i.value, 0);
     if (!total) { el.innerHTML = '<div class="empty">No data in this filter</div>'; return; }
-    const R = 74, C = 100, SW = 26, circ = 2 * Math.PI * R;
+    const R = 72, C = 100, SW = 30, circ = 2 * Math.PI * R;
     let off = 0, segs = "";
     for (const it of items) {
       if (!it.value) continue;
       const frac = it.value / total;
-      const len = Math.max(0, frac * circ - 2);
+      const len = Math.max(0, frac * circ - 3);
       segs += `<circle r="${R}" cx="${C}" cy="${C}" fill="none" stroke="${it.color}"
-        stroke-width="${SW}" stroke-dasharray="${len} ${circ - len}"
+        stroke-width="${SW}" stroke-linecap="round" stroke-dasharray="${len} ${circ - len}"
         stroke-dashoffset="${-off * circ}" transform="rotate(-90 ${C} ${C})"
         data-tip="${it.label}: <b>${fmt(it.value)}</b> (${Math.round(100 * frac)}%)"></circle>`;
       off += frac;
     }
-    el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-      <svg width="160" height="160" viewBox="0 0 200 200">${segs}
-        <text x="${C}" y="${C - 2}" text-anchor="middle" style="font-size:24px;font-weight:650;fill:var(--ink)">${fmt(total)}</text>
-        <text x="${C}" y="${C + 16}" text-anchor="middle">mentions</text></svg>
-      <div class="legend" style="flex-direction:column;align-items:flex-start;gap:6px">
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <svg width="164" height="164" viewBox="0 0 200 200">${segs}
+        <text x="${C}" y="${C - 2}" text-anchor="middle" style="font-size:26px;font-weight:700;fill:var(--ink)">${fmt(total)}</text>
+        <text x="${C}" y="${C + 17}" text-anchor="middle">mentions</text></svg>
+      <div class="legend" style="flex-direction:column;align-items:flex-start;gap:8px">
         ${items.map((i) => `<span><i style="background:${i.color}"></i>${i.label}
           <b style="color:var(--ink)">${fmt(i.value)}</b></span>`).join("")}</div></div>`;
     el.querySelectorAll("circle[data-tip]").forEach((c) => {
@@ -313,7 +386,6 @@ window.META = /*__META__*/{};
     });
   }
 
-  // ── table ──────────────────────────────────────────────────────────────────
   function esc(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
   function renderTable(rows) {
     const q = ($("#f-search").value || "").toLowerCase();
@@ -326,30 +398,26 @@ window.META = /*__META__*/{};
         <td>${esc(r.platform)}</td><td>${esc(r.author)}</td>
         <td class="orig">${esc(r.text)}</td><td class="trans">${esc(r.translation)}</td>
         <td>${esc(r.language)}</td>
-        <td><span class="chip" style="background:${SENT_VAR[r.sentiment] || "var(--neu)"}">${esc(r.sentiment)}</span></td>
+        <td><span class="chip ${esc(r.sentiment)}">${esc(r.sentiment)}</span></td>
         <td>${esc(r.intent)}</td><td>${esc(r.market)}</td><td>${fmt(r.likes || 0)}</td></tr>`).join("");
   }
 
-  // ── render everything ──────────────────────────────────────────────────────
   function renderAll() {
+    renderInputs();
     const rows = filtered();
     renderKpis(rows);
 
-    // sentiment over time
     const days = [...new Set(rows.map((r) => r.day))].sort();
     const byDay = {};
     for (const s of SENT) byDay[s] = days.map(() => 0);
     const idx = new Map(days.map((d, i) => [d, i]));
     for (const r of rows) if (byDay[r.sentiment]) byDay[r.sentiment][idx.get(r.day)]++;
-    const lineSeries = SENT.map((s) => ({ name: s, color: SENT_VAR[s], values: byDay[s] }));
     legend($("#lg-line"), SENT.map((s) => [s, SENT_VAR[s]]));
-    lineChart("#c-line", days, lineSeries);
+    lineChart("#c-line", days, SENT.map((s) => ({ name: s, color: SENT_VAR[s], values: byDay[s] })));
 
-    // donut
     const sc = countBy(rows, "sentiment");
     donut("#c-donut", SENT.map((s) => ({ label: s, value: sc.get(s) || 0, color: SENT_VAR[s] })));
 
-    // platform × sentiment
     legend($("#lg-plat"), SENT.map((s) => [s, SENT_VAR[s]]));
     const plats = [...countBy(rows, "platform").entries()].sort((a, b) => b[1] - a[1]);
     hStacked("#c-platform", plats.map(([p]) => {
@@ -357,26 +425,19 @@ window.META = /*__META__*/{};
       return { label: p, segs: sentimentSegs(m) };
     }));
 
-    // intent
     const ic = [...countBy(rows, "intent").entries()].sort((a, b) => b[1] - a[1]);
     hStacked("#c-intent", ic.map(([k, v]) => ({ label: k, segs: [{ key: "count", val: v, color: "var(--s1)" }] })),
       (r, s) => `${r.label}: <b>${fmt(s.val)}</b>`);
 
-    // share of voice
     legend($("#lg-sov"), [["own brand", "var(--s1)"], ["competitor", "var(--s8)"]]);
     const bm = new Map();
-    for (const r of rows) for (const b of r.brands || []) {
-      const e = bm.get(b) || { n: 0, own: 0 };
-      e.n++; if (r.entity === "own" || r.entity === "both") e.own++;
-      bm.set(b, e);
-    }
-    const sov = [...bm.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 12);
-    hStacked("#c-sov", sov.map(([b, e]) => ({
+    for (const r of rows) for (const b of r.brands || []) bm.set(b, (bm.get(b) || 0) + 1);
+    const sov = [...bm.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+    hStacked("#c-sov", sov.map(([b, n]) => ({
       label: b,
-      segs: [{ key: "mentions", val: e.n, color: (META.own_brands || []).includes(b) ? "var(--s1)" : "var(--s8)" }],
+      segs: [{ key: "mentions", val: n, color: (META.own_brands || []).includes(b) ? "var(--s1)" : "var(--s8)" }],
     })), (r, s) => `${r.label}: <b>${fmt(s.val)}</b> mentions`);
 
-    // themes × sentiment
     const tm = new Map();
     for (const r of rows) for (const t of r.themes || []) {
       const e = tm.get(t) || new Map();
@@ -388,7 +449,6 @@ window.META = /*__META__*/{};
       .slice(0, 12);
     hStacked("#c-themes", themes.map(([t, m]) => ({ label: t, segs: sentimentSegs(m) })));
 
-    // markets × sentiment
     const mkRows = rows.filter((r) => r.market && r.market !== "unknown");
     const mks = [...countBy(mkRows, "market").entries()].sort((a, b) => b[1] - a[1]);
     hStacked("#c-markets", mks.map(([mk]) => {
@@ -396,7 +456,6 @@ window.META = /*__META__*/{};
       return { label: mk, segs: sentimentSegs(m) };
     }));
 
-    // languages
     const lc = [...countBy(rows, "language").entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
     hStacked("#c-langs", lc.map(([k, v]) => ({ label: k, segs: [{ key: "count", val: v, color: "var(--s5)" }] })),
       (r, s) => `${r.label}: <b>${fmt(s.val)}</b>`);
